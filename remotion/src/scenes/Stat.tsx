@@ -39,11 +39,15 @@ const CountUp: React.FC<{raw: string | number | null}> = ({raw}) => {
   return <>{`${parsed.prefix}${formatNumber(parsed.value * t, parsed.decimals, parsed.grouped)}${parsed.suffix}`}</>;
 };
 
-export const Stat: React.FC<StatProps & {durationInFrames: number}> = ({label, value, delta, deltaDirection, unit, durationInFrames}) => {
+export const Stat: React.FC<StatProps & {durationInFrames: number}> = ({label, value, delta, deltaPct, deltaDirection, unit, durationInFrames}) => {
   const {theme, kind} = useTheme();
   const color = deltaColor(theme, kind, deltaDirection);
   const arrow = deltaDirection === 'up' ? '▲' : deltaDirection === 'down' ? '▼' : '';
-  const hasDelta = delta !== null && delta !== undefined && delta !== '';
+  const has = (v: string | number | null | undefined): boolean => v !== null && v !== undefined && v !== '';
+  const hasDelta = has(delta) || has(deltaPct);
+  const deltaText = [has(delta) ? `${String(delta)}${unit && !String(delta).endsWith('%') ? unit : ''}` : null, has(deltaPct) ? `（${String(deltaPct)}）` : null]
+    .filter(Boolean)
+    .join(' ');
   return (
     <SceneFrame durationInFrames={durationInFrames}>
       <div style={{fontSize: theme.sizeBody, color: theme.muted}}>{label}</div>
@@ -63,8 +67,7 @@ export const Stat: React.FC<StatProps & {durationInFrames: number}> = ({label, v
       </div>
       {hasDelta ? (
         <div style={{fontFamily: theme.fontMono, fontSize: theme.sizeBody, color, marginTop: 24}}>
-          {arrow} {String(delta)}
-          {unit && !String(delta).endsWith('%') ? unit : ''}
+          {arrow} {deltaText}
         </div>
       ) : null}
     </SceneFrame>

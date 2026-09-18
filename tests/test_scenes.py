@@ -51,7 +51,7 @@ def test_quote_and_table_narration() -> None:
     quote = next(s for s in scenes if s["type"] == "quote")
     assert quote["narration"] == "某人說，結論。"
     table = next(s for s in scenes if s["type"] == "table")
-    assert table["narration"] == "指數。道瓊，收盤四萬兩千一百，漲跌上漲零點五個百分點；標普，收盤無資料，漲跌無資料。"
+    assert table["narration"] == "指數。道瓊，收盤四萬兩千一百，上漲零點五個百分點；標普，收盤無資料，漲跌無資料。"
 
 
 def test_disclaimer_appended() -> None:
@@ -64,3 +64,36 @@ def test_disclaimer_appended() -> None:
 def test_given_narration_gets_number_reading() -> None:
     c = _content(sections=[{"type": "stat", "label": "x", "value": 1, "narration": "今天漲了 +1.25%。"}])
     assert build_scenes(c)[1]["narration"] == "今天漲了 上漲一點二五個百分點。"
+
+
+def test_pct_table_compact_narration() -> None:
+    same = _content(
+        sections=[
+            {
+                "type": "table",
+                "heading": "美股主要指數",
+                "columns": ["指數", "漲跌%"],
+                "rows": [["道瓊", "+0.61%"], ["那斯達克", "+1.69%"], ["費半", None]],
+            }
+        ]
+    )
+    assert build_scenes(same)[1][
+        "narration"
+    ] == "美股主要指數全數上漲，道瓊零點六一、那斯達克一點六九、費半無資料個百分點。".replace(
+        "費半無資料個百分點", "費半無資料個百分點"
+    )
+    mixed = _content(
+        sections=[
+            {
+                "type": "table",
+                "heading": "",
+                "columns": ["指數", "漲跌%"],
+                "rows": [["道瓊", "+0.61%"], ["標普", "-0.2%"]],
+            }
+        ]
+    )
+    assert build_scenes(mixed)[1]["narration"] == "道瓊上漲零點六一、標普下跌零點二個百分點。"
+    plain = _content(
+        sections=[{"type": "table", "heading": "x", "columns": ["名稱", "收盤"], "rows": [["道瓊", "42,100"]]}]
+    )
+    assert build_scenes(plain)[1]["narration"] == "x。道瓊，收盤四萬兩千一百。"

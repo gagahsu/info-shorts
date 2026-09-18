@@ -8,6 +8,7 @@ export type StatProps = {
   label: string;
   value: string | number | null;
   delta: string | number | null;
+  deltaPct: string | number | null;
   deltaDirection: DeltaDirection;
   unit: string;
 };

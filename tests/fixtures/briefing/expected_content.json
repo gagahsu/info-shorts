@@ -1,0 +1,109 @@
+{
+  "id": "2026-09-18-briefing",
+  "kind": "briefing",
+  "title": "台股盤前速報",
+  "subtitle": "偏多開高",
+  "date": "2026-09-18",
+  "disclaimer": true,
+  "target_duration": 60,
+  "sections": [
+    {
+      "type": "stat",
+      "label": "台指期夜盤",
+      "value": "47,160",
+      "delta": "+701",
+      "delta_pct": "+1.51%",
+      "unit": "點",
+      "narration": null,
+      "delta_direction": "up"
+    },
+    {
+      "type": "table",
+      "heading": "美股主要指數",
+      "columns": [
+        "指數",
+        "漲跌%"
+      ],
+      "rows": [
+        [
+          "道瓊",
+          "+0.61%"
+        ],
+        [
+          "S&P 500",
+          "+1.14%"
+        ],
+        [
+          "那斯達克",
+          "+1.69%"
+        ],
+        [
+          "費城半導體",
+          "+3.14%"
+        ]
+      ],
+      "narration": null
+    },
+    {
+      "type": "table",
+      "heading": "台股 ADR",
+      "columns": [
+        "ADR",
+        "漲跌%"
+      ],
+      "rows": [
+        [
+          "台積電",
+          "+3.00%"
+        ],
+        [
+          "聯電",
+          "+8.61%"
+        ],
+        [
+          "日月光",
+          "+5.38%"
+        ]
+      ],
+      "narration": null
+    },
+    {
+      "type": "stat",
+      "label": "台積電 ADR 溢價率",
+      "value": "13.18",
+      "delta": null,
+      "unit": "%",
+      "narration": null,
+      "delta_pct": null,
+      "delta_direction": null
+    },
+    {
+      "type": "bullets",
+      "heading": "今日新聞重點",
+      "items": [
+        "美債殖利率回落與油價走跌 費半暴漲逾3%領軍美股反彈",
+        "台指期夜盤強攻47K暴漲701點 台股ADR全線噴出"
+      ],
+      "narration": null
+    },
+    {
+      "type": "bullets",
+      "heading": "今日焦點族群",
+      "items": [
+        "晶圓代工與先進封裝",
+        "AI伺服器與散熱零組件",
+        "營建與資產活化概念"
+      ],
+      "narration": null
+    },
+    {
+      "type": "quote",
+      "text": "開盤訊號：偏多開高",
+      "source": null,
+      "narration": null
+    }
+  ],
+  "lang": "zh-TW",
+  "aspect": "9:16",
+  "bgm": null
+}

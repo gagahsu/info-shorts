@@ -60,3 +60,10 @@
 ## ADR-014 2026-09-19 BGM ducking 在 Remotion 內以 frame 函數實作
 - 決策：`props.audio.voiceRanges`（有旁白的 frame 區間，由 props.py 從 scenes 推得）→ `Bgm.tsx` 的 `volume={(f) => …}`：無旁白 0.25、旁白中 0.08、8 frame 斜坡、片尾 1s 淡出。
 - 理由：不用先在 ffmpeg 混音（保持「Remotion 是唯一合成點」），且 Remotion 會把音量函數烘進輸出。
+
+## ADR-015 2026-09-19 briefing adapter 的對應取捨；stat 增加通用欄位 delta_pct
+- 來源：ig-auto-post 的 `IG_BRIEFING_PAYLOAD`（真實 schema 記在 docs/ADAPTERS.md）。
+- schema：stat 多一個 `delta_pct`（漲跌幅 %），因為台指期同時有「漲跌點數」與「漲跌幅」，兩者都該顯示與唸出；這是通用概念（company 的月營收 YoY 也用得到），不是 adapter 專屬欄位。
+- 對應取捨：`news[].detail` 不用（太長，短影音只唸標題）；`groups_note` 只取族群名稱（冒號前）；`caption` 不用；`premium` 拆成 stat（溢價率／折價率 + 數值），解析失敗給 null。
+- 旁白規則（core，非 adapter）：只有漲跌% 的表格不重複唸欄名；unit 為 % 的數值讀「百分之 X」；漲跌幅讀「漲幅／跌幅 X 個百分點」。
+- 風險：payload 是 Gemini 產的，欄位可能漂移；adapter 對每個欄位都容錯（缺 → null 或不產 scene），fixture 測試釘住目前版本。

@@ -1,0 +1,189 @@
+{
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 2123,
+  "theme": "neutral",
+  "kind": "briefing",
+  "audio": {
+    "voice": "voice.mp3",
+    "bgm": null,
+    "bgmVolume": 0.25,
+    "duckVolume": 0.08,
+    "voiceRanges": [
+      [
+        0,
+        110
+      ],
+      [
+        148,
+        350
+      ],
+      [
+        390,
+        677
+      ],
+      [
+        716,
+        916
+      ],
+      [
+        955,
+        1057
+      ],
+      [
+        1094,
+        1502
+      ],
+      [
+        1540,
+        1849
+      ],
+      [
+        1889,
+        1950
+      ],
+      [
+        1988,
+        2084
+      ]
+    ]
+  },
+  "captions": "voice.srt",
+  "scenes": [
+    {
+      "type": "title",
+      "startFrame": 0,
+      "endFrame": 148,
+      "props": {
+        "title": "台股盤前速報",
+        "subtitle": "偏多開高",
+        "date": "2026-09-18"
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 148,
+      "endFrame": 390,
+      "props": {
+        "label": "台指期夜盤",
+        "value": "47,160",
+        "delta": "+701",
+        "deltaPct": "+1.51%",
+        "deltaDirection": "up",
+        "unit": "點"
+      }
+    },
+    {
+      "type": "table",
+      "startFrame": 390,
+      "endFrame": 716,
+      "props": {
+        "heading": "美股主要指數",
+        "columns": [
+          "指數",
+          "漲跌%"
+        ],
+        "rows": [
+          [
+            "道瓊",
+            "+0.61%"
+          ],
+          [
+            "S&P 500",
+            "+1.14%"
+          ],
+          [
+            "那斯達克",
+            "+1.69%"
+          ],
+          [
+            "費城半導體",
+            "+3.14%"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "startFrame": 716,
+      "endFrame": 955,
+      "props": {
+        "heading": "台股 ADR",
+        "columns": [
+          "ADR",
+          "漲跌%"
+        ],
+        "rows": [
+          [
+            "台積電",
+            "+3.00%"
+          ],
+          [
+            "聯電",
+            "+8.61%"
+          ],
+          [
+            "日月光",
+            "+5.38%"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 955,
+      "endFrame": 1094,
+      "props": {
+        "label": "台積電 ADR 溢價率",
+        "value": "13.18",
+        "delta": null,
+        "deltaPct": null,
+        "deltaDirection": null,
+        "unit": "%"
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 1094,
+      "endFrame": 1540,
+      "props": {
+        "heading": "今日新聞重點",
+        "items": [
+          "美債殖利率回落與油價走跌 費半暴漲逾3%領軍美股反彈",
+          "台指期夜盤強攻47K暴漲701點 台股ADR全線噴出"
+        ]
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 1540,
+      "endFrame": 1889,
+      "props": {
+        "heading": "今日焦點族群",
+        "items": [
+          "晶圓代工與先進封裝",
+          "AI伺服器與散熱零組件",
+          "營建與資產活化概念"
+        ]
+      }
+    },
+    {
+      "type": "quote",
+      "startFrame": 1889,
+      "endFrame": 1988,
+      "props": {
+        "text": "開盤訊號：偏多開高",
+        "source": null
+      }
+    },
+    {
+      "type": "disclaimer",
+      "startFrame": 1988,
+      "endFrame": 2123,
+      "props": {
+        "text": "以上內容僅供參考，不構成任何投資建議。投資有風險，請自行審慎評估。"
+      }
+    }
+  ]
+}

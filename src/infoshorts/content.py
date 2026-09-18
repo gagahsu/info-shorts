@@ -37,8 +37,9 @@ def apply_defaults(content: dict[str, Any], *, run_id: str | None = None) -> dic
         s.setdefault("narration", None)
         if s.get("type") == "stat":
             s.setdefault("delta", None)
+            s.setdefault("delta_pct", None)
             s.setdefault("unit", "")
-            s.setdefault("delta_direction", _direction(s.get("delta")))
+            s.setdefault("delta_direction", _direction(s.get("delta")) or _direction(s.get("delta_pct")))
         if s.get("type") == "quote":
             s.setdefault("source", None)
         sections.append(s)

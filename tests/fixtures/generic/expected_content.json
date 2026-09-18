@@ -3,9 +3,32 @@
   "subtitle": "AI 影片工具速覽",
   "date": "2026-09-20",
   "sections": [
-    {"type": "stat", "label": "Kinocut MCP tools", "value": "190+", "narration": null, "delta": null, "unit": "", "delta_direction": null},
-    {"type": "bullets", "heading": "為什麼重要", "items": ["不用猜 ffmpeg 參數", "內建品質檢查", "本機免費"], "narration": null},
-    {"type": "quote", "text": "先把 Kinocut 用起來，再談 Remotion。", "narration": "一句話總結：先把 Kinocut 用起來，再談 Remotion。", "source": null}
+    {
+      "type": "stat",
+      "label": "Kinocut MCP tools",
+      "value": "190+",
+      "narration": null,
+      "delta": null,
+      "unit": "",
+      "delta_direction": null,
+      "delta_pct": null
+    },
+    {
+      "type": "bullets",
+      "heading": "為什麼重要",
+      "items": [
+        "不用猜 ffmpeg 參數",
+        "內建品質檢查",
+        "本機免費"
+      ],
+      "narration": null
+    },
+    {
+      "type": "quote",
+      "text": "先把 Kinocut 用起來，再談 Remotion。",
+      "narration": "一句話總結：先把 Kinocut 用起來，再談 Remotion。",
+      "source": null
+    }
   ],
   "lang": "zh-TW",
   "aspect": "9:16",

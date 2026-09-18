@@ -17,6 +17,7 @@ MAX_BULLETS_PER_SCENE = 5
 DISCLAIMER_TEXT = "以上內容僅供參考，不構成任何投資建議。投資有風險，請自行審慎評估。"
 DISCLAIMER_NARRATION = "以上內容僅供參考，不構成投資建議。"
 ORDINALS = ["第一", "第二", "第三", "第四", "第五"]
+_DIRECTION_WORDS = ("上漲", "下跌", "持平")
 
 
 def _scene(idx: int, type_: str, props: dict[str, Any], narration: str | None) -> dict[str, Any]:
@@ -35,6 +36,9 @@ def _stat_narration(s: dict[str, Any]) -> str:
     delta = fmt.delta_to_zh(s.get("delta"), unit)
     if delta:
         text += f"，{delta}"
+    pct = fmt.pct_change_to_zh(s.get("delta_pct"))
+    if pct:
+        text += f"，{pct}"
     return text + "。"
 
 
@@ -43,16 +47,58 @@ def _bullets_narration(heading: str, items: list[str]) -> str:
     return f"{heading}。{body}。" if heading else body + "。"
 
 
+_SIGNED_PCT_RE = re.compile(r"([+-])\s*(\d[\d,]*(?:\.\d+)?)\s*%")
+
+
+def _pct_table_narration(heading: str, rows: list[list[Any]]) -> str | None:
+    """兩欄且第二欄全是帶號百分比（或缺值）的表格，用壓縮讀法；否則回 None。
+
+    同方向：「美股主要指數全數上漲，道瓊零點六一、那斯達克一點六九個百分點。」
+    混合：  「美股主要指數。道瓊上漲零點六一、標普下跌零點二個百分點。」
+    """
+    parsed: list[tuple[str, str | None, str | None]] = []  # (name, sign, num)
+    for row in rows:
+        if len(row) != 2:
+            return None
+        name, val = row
+        if val is None or str(val).strip() == "":
+            parsed.append((str(name or "—"), None, None))
+            continue
+        m = _SIGNED_PCT_RE.fullmatch(str(val).strip())
+        if not m:
+            return None
+        parsed.append((str(name or "—"), m.group(1), m.group(2)))
+    signs = {p[1] for p in parsed if p[1]}
+    if not signs:
+        return None
+    word = {"+": "上漲", "-": "下跌"}
+    if len(signs) == 1:
+        sign = signs.pop()
+        items = [f"{n}{fmt.decimal_to_zh(num)}" if num else f"{n}無資料" for n, _, num in parsed]
+        head = f"{heading}全數{word[sign]}，" if heading else f"全數{word[sign]}，"
+        return head + "、".join(items) + "個百分點。"
+    items = [f"{n}{word[sg]}{fmt.decimal_to_zh(num)}" if (num and sg) else f"{n}無資料" for n, sg, num in parsed]
+    return (f"{heading}。" if heading else "") + "、".join(items) + "個百分點。"
+
+
 def _table_narration(s: dict[str, Any]) -> str:
     cols = s.get("columns") or []
     rows = s.get("rows") or []
+    if len(cols) == 2:
+        compact = _pct_table_narration(s.get("heading") or "", rows)
+        if compact:
+            return compact
     lines = []
     for row in rows:
         cells = [fmt.value_to_zh(v) for v in row]
         if len(cols) == len(cells) and len(cells) > 1:
             names = [_column_name(c) for c in cols]
-            rest = "，".join(f"{names[i]}{cells[i]}" for i in range(1, len(cells)))
-            lines.append(f"{cells[0]}，{rest}")
+            # 讀法已含方向（上漲／下跌／持平）就不再唸欄名，避免「漲跌上漲零點六個百分點」
+            parts = [
+                cells[i] if cells[i].startswith(_DIRECTION_WORDS) else f"{names[i]}{cells[i]}"
+                for i in range(1, len(cells))
+            ]
+            lines.append(f"{cells[0]}，{'，'.join(parts)}")
         else:
             lines.append("，".join(cells))
     head = s.get("heading") or ""
@@ -91,6 +137,7 @@ def build_scenes(content: dict[str, Any]) -> list[dict[str, Any]]:
                 "label": s.get("label", ""),
                 "value": s.get("value"),
                 "delta": s.get("delta"),
+                "deltaPct": s.get("delta_pct"),
                 "deltaDirection": s.get("delta_direction"),
                 "unit": s.get("unit", ""),
             }

@@ -1,12 +1,20 @@
 import React from 'react';
+import {deltaColor} from '../theme';
 import {useTheme} from '../ThemeContext';
 import type {TableProps} from '../types';
 import {SceneFrame, useStagger} from './SceneFrame';
 
 const cell = (v: string | number | null): string => (v === null || v === undefined || v === '' ? '—' : String(v));
+/** '+0.61%' / '-120' 這類帶號數值 → up/down，其餘 null（不上色） */
+const signOf = (v: string | number | null): 'up' | 'down' | null => {
+  const s = cell(v);
+  if (/^\+\s*\d/.test(s)) return 'up';
+  if (/^-\s*\d/.test(s)) return 'down';
+  return null;
+};
 
 const Row: React.FC<{index: number; cells: (string | number | null)[]}> = ({index, cells}) => {
-  const {theme} = useTheme();
+  const {theme, kind} = useTheme();
   const style = useStagger(index + 1);
   return (
     <div
@@ -20,7 +28,15 @@ const Row: React.FC<{index: number; cells: (string | number | null)[]}> = ({inde
       }}
     >
       {cells.map((c, i) => (
-        <div key={i} style={{flex: i === 0 ? 1.4 : 1, fontFamily: i === 0 ? theme.fontDisplay : theme.fontMono, textAlign: i === 0 ? 'left' : 'right'}}>
+        <div
+          key={i}
+          style={{
+            flex: i === 0 ? 1.4 : 1,
+            fontFamily: i === 0 ? theme.fontDisplay : theme.fontMono,
+            textAlign: i === 0 ? 'left' : 'right',
+            color: i > 0 && signOf(c) ? deltaColor(theme, kind, signOf(c)) : theme.text,
+          }}
+        >
           {cell(c)}
         </div>
       ))}

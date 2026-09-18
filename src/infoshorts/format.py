@@ -126,9 +126,23 @@ def value_to_zh(value: Any, unit: str = "") -> str:
     more = s.endswith("+")
     core = s.rstrip("+")
     if _PLAIN_NUM_RE.fullmatch(core):
-        text = decimal_to_zh(core) + unit
+        text = ("百分之" + decimal_to_zh(core)) if unit in ("%", "％") else decimal_to_zh(core) + unit
         return "超過" + text if more else text
     return s + unit
+
+
+def pct_change_to_zh(pct: Any) -> str | None:
+    """漲跌幅讀法：'+1.51%' → 漲幅一點五一個百分點；'-0.8%' → 跌幅零點八個百分點；0 → 持平。"""
+    if pct is None or str(pct).strip() == "":
+        return None
+    s = str(pct).strip()
+    m = _PERCENT_RE.fullmatch(s) or re.fullmatch(r"([+-]?)(\d[\d,]*(?:\.\d+)?)", s)
+    if not m:
+        return s
+    sign, num = m.group(1), m.group(2)
+    if Decimal(num.replace(",", "")) == 0:
+        return "持平"
+    return {"+": "漲幅", "-": "跌幅"}.get(sign, "幅度") + decimal_to_zh(num) + "個百分點"
 
 
 def date_to_zh(iso: str | None) -> str | None:
