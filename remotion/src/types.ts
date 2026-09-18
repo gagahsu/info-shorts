@@ -31,7 +31,15 @@ export type ShortProps = {
   durationInFrames: number;
   theme: string;
   kind: ContentKind;
-  audio: {voice: string | null; bgm: string | null; bgmVolume: number};
+  audio: {
+    voice: string | null;
+    bgm: string | null;
+    bgmVolume: number;
+    /** 旁白進行中 BGM 壓低到的音量 */
+    duckVolume: number;
+    /** 有旁白的 [startFrame, endFrame] 區間 */
+    voiceRanges: number[][];
+  };
   captions: string | null;
   scenes: Scene[];
 };

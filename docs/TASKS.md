@@ -2,7 +2,7 @@
 
 > Claude：開工前讀「當前階段」。完成一項就勾掉並在 Log 加一行。不跳階段。
 
-## 當前階段：Phase 1 收尾 → Phase 2
+## 當前階段：Phase 2 完成 → Phase 3
 
 ---
 
@@ -27,14 +27,14 @@
 - **驗收**：`examples/generic.json` → 一支 9:16 mp4（22.6s；example 內容短，45s 是目標不是下限），字幕與語音對齊、QA 通過
 
 ## Phase 2 — 補齊 scene 與細節
-- [x] `table` scene、`disclaimer` scene（`disclaimer: true` 自動插入）— Phase 1 順手做完，尚未用真實資料驗證
-- [ ] BGM 支援 + voice ducking（`--bgm` 已能混入固定 0.25 音量，ducking 未做）
-- [ ] 數字 counting-up 動畫
+- [x] `table` scene、`disclaimer` scene（`disclaimer: true` 自動插入）— `examples/multi-stat.json` 已 render 驗證
+- [x] BGM 支援 + voice ducking（`Bgm.tsx`：0.25 / 旁白中 0.08、8 frame 斜坡、片尾淡出；ADR-014）
+- [x] 數字 counting-up 動畫（`Stat.tsx`，0.8s，保留千分位／小數／前後綴）
 - [x] 漲跌顏色 `deltaColor(kind, dir)`（theme.ts）
-- [ ] Kokoro 備援引擎 `--engine kokoro`（介面已留，`KokoroEngine` 目前 raise NotImplementedError）
-- [ ] 三支不同內容的 generic 測試（純文字、長 bullets、多 stat）
-- [ ] Kinocut 視覺檢查（亮度／對比）在 Windows 路徑上失敗（`movie=` filter 的磁碟機冒號逃脫問題），目前只列 advisory；回報上游或等升版
-- **驗收**：所有 scene 型態都有 example 可 render；換 `theme` 不改元件
+- [x] Kokoro 備援引擎 `--engine kokoro`（`uv sync --group kokoro`；字幕時間等比估算，ADR-013）
+- [x] 三支不同內容的 generic 測試（`examples/text-only.json`、`long-bullets.json`、`multi-stat.json`；`tests/test_examples.py`）
+- [x] Kinocut 視覺檢查在 Windows 路徑上失敗 → `qa.py` monkeypatch（ADR-012），亮度／對比現在有數據（深色底只是 advisory）
+- **驗收**：所有 scene 型態都有 example 可 render ✓；換 `theme` 不改元件 ✓（元件內無色碼，`captionBg` 也進 theme）
 
 ## Phase 3 — 兩個 adapter
 - [ ] 去 ig-auto-post 讀 `IG_BRIEFING_PAYLOAD` 實際 schema，寫進 ADAPTERS.md
@@ -63,3 +63,6 @@
 - 2026-09-18：Phase 1 完成。`examples/generic.json` 全流程出片（TTS edge-tts → Remotion render 676 frames 約 1 分鐘 → Kinocut QA）。
   修過的坑：(1) 字幕硬切 14 字會把詞切半 → 對照原文標點切（ADR-011）；(2) blackdetect 預設 pix_th=0.10 把深灰底空曠畫面當黑幀 → 改 0.04；
   (3) 旁白 -19.5 LUFS 貼近下限 → 最終混音 loudnorm 到 -16；(4) Kinocut signalstats 在 Windows 路徑失敗 → 只列 advisory。
+- 2026-09-19：Phase 2 完成。三支 generic 範例（30s / 34s / 51s）全部過 QA；multi-stat 帶 BGM 驗證 ducking；Kokoro 中文備援可用（CPU 約 0.6× 即時，首次下載模型 330 MB）。
+  修過的坑：(1) Kinocut `movie=` 路徑在 Windows 需加引號 → monkeypatch；(2) 表格欄名「漲跌%」被讀成「漲跌百分比」→ 旁白去掉單位標記；
+  (3) edge-tts 段尾約 0.7s 靜音會讓 ducking 區間過長 → 用最後一個字的結束時間（`scenes[].speech_end`）。

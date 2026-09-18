@@ -58,12 +58,15 @@ Claude Code 內 `/mcp` 應看到 `kinocut`，196 個 tools。
 pipeline 的 `qa.py` **不走 MCP**，直接 import `kinocut` 的 Python API（probe / quality_check / metric_qc），
 MCP 只是給 Claude 互動用。
 
-## 6. Kokoro TTS（edge-tts 備援，Phase 2）
+## 6. Kokoro TTS（edge-tts 備援）
 
 ```powershell
-uv pip install kokoro soundfile   # 依 https://github.com/hexgrad/kokoro README，中文需要對應 voice pack
+uv sync --group kokoro        # kokoro + misaki[zh] + soundfile + torch(CPU)，約 300 MB
+uv run infoshorts build ... --engine kokoro [--voice zf_xiaobei]
 ```
-`tts.py` 已留 `--engine kokoro` 介面，實作排在 Phase 2。
+第一次使用會從 Hugging Face 下載 `hexgrad/Kokoro-82M`（約 330 MB）到 `%USERPROFILE%\.cache\huggingface`。
+中文聲音：`zf_xiaobei`（預設）、`zf_xiaoni`、`zf_xiaoxiao`、`zf_xiaoyi`、`zm_yunjian`、`zm_yunxi`、`zm_yunxia`、`zm_yunyang`。
+中文 pipeline 沒有逐詞時間碼，字幕時間是在每個句子內依字數等比估算（ADR-013），精度比 edge-tts 差但可用。
 
 ## 7. 若要改在 WSL2 / Linux 跑
 

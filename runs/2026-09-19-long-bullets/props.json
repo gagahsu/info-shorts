@@ -1,0 +1,82 @@
+{
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 1014,
+  "theme": "neutral",
+  "kind": "generic",
+  "audio": {
+    "voice": "voice.mp3",
+    "bgm": null,
+    "bgmVolume": 0.25,
+    "duckVolume": 0.08,
+    "voiceRanges": [
+      [
+        0,
+        192
+      ],
+      [
+        204,
+        623
+      ],
+      [
+        635,
+        900
+      ],
+      [
+        912,
+        1002
+      ]
+    ]
+  },
+  "captions": "voice.srt",
+  "scenes": [
+    {
+      "type": "title",
+      "startFrame": 0,
+      "endFrame": 204,
+      "props": {
+        "title": "影片出片前檢查清單",
+        "subtitle": "八件事，一件都不能漏",
+        "date": "2026-09-22"
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 204,
+      "endFrame": 635,
+      "props": {
+        "heading": "出片前檢查",
+        "items": [
+          "解析度 1080×1920",
+          "時長 30 到 60 秒",
+          "字幕不超過兩行",
+          "音量落在 -16 LUFS 附近"
+        ]
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 635,
+      "endFrame": 912,
+      "props": {
+        "heading": "出片前檢查（續）",
+        "items": [
+          "沒有黑幀",
+          "片尾有免責聲明",
+          "檔名含日期",
+          "QA 報告已存檔"
+        ]
+      }
+    },
+    {
+      "type": "quote",
+      "startFrame": 912,
+      "endFrame": 1014,
+      "props": {
+        "text": "清單不是限制，是保險。",
+        "source": null
+      }
+    }
+  ]
+}

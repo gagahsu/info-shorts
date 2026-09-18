@@ -80,3 +80,21 @@ def test_write_srt(tmp_path: Path) -> None:
     text = out.read_text(encoding="utf-8")
     assert text.startswith("1\n00:00:00,000 --> ")
     assert "你好世界" in text
+
+
+def test_spread_words_proportional() -> None:
+    from infoshorts.tts import spread_words
+
+    words = spread_words("台指期，上漲 ffmpeg。", 10.0, 4.0)
+    assert [w.text for w in words] == ["台", "指", "期", "上", "漲", "ffmpeg"]
+    assert words[0].start == 10.0
+    assert 13.0 < words[-1].end < 14.0  # 句號的停頓權重留在最後
+    assert words[-1].end - words[-1].start > words[0].end - words[0].start  # 英文詞較寬
+
+
+def test_rate_to_speed() -> None:
+    from infoshorts.tts import _rate_to_speed
+
+    assert _rate_to_speed("+5%") == 1.05
+    assert _rate_to_speed("-10%") == 0.9
+    assert _rate_to_speed("weird") == 1.0

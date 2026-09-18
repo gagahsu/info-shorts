@@ -1,0 +1,54 @@
+{
+  "video": "C:\\Users\\icema\\workspace\\info-shorts\\runs\\2026-09-19-long-bullets\\out\\2026-09-19-long-bullets.mp4",
+  "ok": true,
+  "checks": [
+    {
+      "name": "duration",
+      "passed": true,
+      "message": "33.86s（預期 33.80s ± 0.5）",
+      "details": {
+        "actual": 33.856,
+        "expected": 33.8
+      }
+    },
+    {
+      "name": "resolution",
+      "passed": true,
+      "message": "1080×1920（預期 1080×1920）",
+      "details": {}
+    },
+    {
+      "name": "audio_length",
+      "passed": true,
+      "message": "音軌 33.86s vs 影片 33.86s",
+      "details": {
+        "audio": 33.856,
+        "video": 33.856
+      }
+    },
+    {
+      "name": "loudness",
+      "passed": true,
+      "message": "Audio loudness is good (-16.0 LUFS)",
+      "details": {
+        "lufs": -16.0,
+        "true_peak": -4.41,
+        "loudness_range": 2.4,
+        "target_lufs": -16
+      }
+    },
+    {
+      "name": "black_frames",
+      "passed": true,
+      "message": "無連續黑幀 > 0.5s",
+      "details": {
+        "runs": []
+      }
+    }
+  ],
+  "advisory": [
+    "kinocut brightness: Video is quite dark (brightness: 22.0). Consider slight brightness increase.",
+    "kinocut contrast: Video has low contrast (std dev: 0.0). Image may appear flat. Consider increasing contrast.",
+    "kinocut saturation: Video appears desaturated (estimated: 1.1%). Consider increasing saturation."
+  ]
+}

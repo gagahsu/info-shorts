@@ -1,0 +1,116 @@
+[
+  {
+    "idx": 0,
+    "type": "title",
+    "props": {
+      "title": "盤前三個數字",
+      "subtitle": "示範資料，非真實行情",
+      "date": "2026-09-23"
+    },
+    "narration": "九月二十三日，盤前三個數字，示範資料，非真實行情。",
+    "start": 0.0,
+    "end": 6.448,
+    "speech_end": 5.121
+  },
+  {
+    "idx": 1,
+    "type": "stat",
+    "props": {
+      "label": "台指期夜盤",
+      "value": "23,456",
+      "delta": "+120",
+      "deltaDirection": "up",
+      "unit": "點"
+    },
+    "narration": "台指期夜盤，兩萬三千四百五十六點，上漲一百二十點。",
+    "start": 6.448,
+    "end": 12.656,
+    "speech_end": 11.331
+  },
+  {
+    "idx": 2,
+    "type": "stat",
+    "props": {
+      "label": "費城半導體",
+      "value": "5,432.1",
+      "delta": "-0.8%",
+      "deltaDirection": "down",
+      "unit": ""
+    },
+    "narration": "費城半導體，五千四百三十二點一，下跌零點八個百分點。",
+    "start": 12.656,
+    "end": 18.912,
+    "speech_end": 17.587
+  },
+  {
+    "idx": 3,
+    "type": "stat",
+    "props": {
+      "label": "台積電 ADR 折溢價",
+      "value": null,
+      "delta": null,
+      "deltaDirection": null,
+      "unit": "%"
+    },
+    "narration": "台積電 ADR 折溢價，今天沒有資料。",
+    "start": 18.912,
+    "end": 23.272,
+    "speech_end": 21.986
+  },
+  {
+    "idx": 4,
+    "type": "table",
+    "props": {
+      "heading": "美股三大指數",
+      "columns": [
+        "指數",
+        "收盤",
+        "漲跌%"
+      ],
+      "rows": [
+        [
+          "道瓊",
+          "42,100",
+          "+0.5%"
+        ],
+        [
+          "標普 500",
+          "5,700",
+          "-0.2%"
+        ],
+        [
+          "那斯達克",
+          "18,200",
+          "+1.1%"
+        ]
+      ]
+    },
+    "narration": "美股三大指數。道瓊，收盤四萬兩千一百，漲跌上漲零點五個百分點；標普 500，收盤五千七百，漲跌下跌零點二個百分點；那斯達克，收盤一萬八千兩百，漲跌上漲一點一個百分點。",
+    "start": 23.272,
+    "end": 41.12,
+    "speech_end": 39.82
+  },
+  {
+    "idx": 5,
+    "type": "quote",
+    "props": {
+      "text": "數字是示範用，別當真。",
+      "source": null
+    },
+    "narration": "數字是示範用，別當真。",
+    "start": 41.12,
+    "end": 44.664,
+    "speech_end": 43.36
+  },
+  {
+    "idx": 6,
+    "type": "disclaimer",
+    "props": {
+      "text": "以上內容僅供參考，不構成任何投資建議。投資有風險，請自行審慎評估。"
+    },
+    "narration": "以上內容僅供參考，不構成投資建議。",
+    "start": 44.664,
+    "end": 49.168,
+    "speech_end": 47.869
+  }
+]

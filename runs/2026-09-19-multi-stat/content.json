@@ -1,0 +1,74 @@
+{
+  "id": "example-multi-stat",
+  "kind": "generic",
+  "title": "盤前三個數字",
+  "subtitle": "示範資料，非真實行情",
+  "date": "2026-09-23",
+  "disclaimer": true,
+  "sections": [
+    {
+      "type": "stat",
+      "label": "台指期夜盤",
+      "value": "23,456",
+      "delta": "+120",
+      "unit": "點",
+      "narration": null,
+      "delta_direction": "up"
+    },
+    {
+      "type": "stat",
+      "label": "費城半導體",
+      "value": "5,432.1",
+      "delta": "-0.8%",
+      "unit": "",
+      "narration": null,
+      "delta_direction": "down"
+    },
+    {
+      "type": "stat",
+      "label": "台積電 ADR 折溢價",
+      "value": null,
+      "delta": null,
+      "unit": "%",
+      "narration": "台積電 ADR 折溢價，今天沒有資料。",
+      "delta_direction": null
+    },
+    {
+      "type": "table",
+      "heading": "美股三大指數",
+      "columns": [
+        "指數",
+        "收盤",
+        "漲跌%"
+      ],
+      "rows": [
+        [
+          "道瓊",
+          "42,100",
+          "+0.5%"
+        ],
+        [
+          "標普 500",
+          "5,700",
+          "-0.2%"
+        ],
+        [
+          "那斯達克",
+          "18,200",
+          "+1.1%"
+        ]
+      ],
+      "narration": null
+    },
+    {
+      "type": "quote",
+      "text": "數字是示範用，別當真。",
+      "source": null,
+      "narration": null
+    }
+  ],
+  "bgm": null,
+  "lang": "zh-TW",
+  "aspect": "9:16",
+  "target_duration": 45
+}

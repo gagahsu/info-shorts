@@ -1,0 +1,54 @@
+{
+  "video": "C:\\Users\\icema\\workspace\\info-shorts\\runs\\2026-09-19-text-only-kokoro\\out\\2026-09-19-text-only-kokoro.mp4",
+  "ok": true,
+  "checks": [
+    {
+      "name": "duration",
+      "passed": true,
+      "message": "31.19s（預期 31.13s ± 0.5）",
+      "details": {
+        "actual": 31.189333,
+        "expected": 31.133333333333333
+      }
+    },
+    {
+      "name": "resolution",
+      "passed": true,
+      "message": "1080×1920（預期 1080×1920）",
+      "details": {}
+    },
+    {
+      "name": "audio_length",
+      "passed": true,
+      "message": "音軌 31.19s vs 影片 31.19s",
+      "details": {
+        "audio": 31.189333,
+        "video": 31.189333
+      }
+    },
+    {
+      "name": "loudness",
+      "passed": true,
+      "message": "Audio loudness is good (-16.8 LUFS)",
+      "details": {
+        "lufs": -16.81,
+        "true_peak": -4.13,
+        "loudness_range": 4.0,
+        "target_lufs": -16
+      }
+    },
+    {
+      "name": "black_frames",
+      "passed": true,
+      "message": "無連續黑幀 > 0.5s",
+      "details": {
+        "runs": []
+      }
+    }
+  ],
+  "advisory": [
+    "kinocut brightness: Video is quite dark (brightness: 20.9). Consider slight brightness increase.",
+    "kinocut contrast: Video has low contrast (std dev: 0.0). Image may appear flat. Consider increasing contrast.",
+    "kinocut saturation: Video appears desaturated (estimated: 1.1%). Consider increasing saturation."
+  ]
+}

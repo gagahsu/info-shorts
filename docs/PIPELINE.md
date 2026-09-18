@@ -40,7 +40,8 @@
   - `23,456` → 「兩萬三千四百五十六」（≥ 1 萬用中文單位；小數保留兩位）
   - 日期 `2026-09-20` → 「九月二十日」
   - 英文縮寫（ADR、ETF、AI）保留原文，edge-tts 會讀字母
-- 產出 `scenes.json`：`[{"idx":0,"type":"title","props":{...},"narration":"...","start":null,"end":null}]`
+- 產出 `scenes.json`：`[{"idx":0,"type":"title","props":{...},"narration":"...","start":null,"end":null}]`（tts 之後多一個 `speech_end`＝最後一個字的結束秒，給 BGM ducking 用）
+- 表格欄名的單位標記不讀（「漲跌%」→「漲跌」）；缺值讀「無資料」。
 - Claude 在此步驟後**回報旁白稿摘要**。
 
 ## Step 3 — tts.py
@@ -64,14 +65,17 @@ edge-tts --voice zh-TW-HsiaoChenNeural --rate=+5% \
   "fps": 30,
   "width": 1080, "height": 1920,
   "theme": "neutral",
-  "audio": {"voice": "/abs/runs/<run>/voice.mp3", "bgm": null, "bgmVolume": 0.25},
-  "captions": "/abs/runs/<run>/voice.srt",
+  "audio": {"voice": "voice.mp3", "bgm": null, "bgmVolume": 0.25, "duckVolume": 0.08, "voiceRanges": [[0, 150], [162, 270]]},
+  "captions": "voice.srt",
   "scenes": [
     {"type": "title", "startFrame": 0, "endFrame": 96, "props": {"title": "...", "subtitle": "...", "date": "..."}},
     {"type": "stat", "startFrame": 96, "endFrame": 240, "props": {...}}
   ]
 }
 ```
+
+`voiceRanges`＝有旁白的 frame 區間（扣掉 0.4s 緩衝），Remotion 的 `Bgm.tsx` 用它做 ducking（ADR-014）。
+`--bgm path` 會把檔案複製到 run 目錄成 `bgm.<ext>`。
 
 ## Step 5 — Remotion render
 

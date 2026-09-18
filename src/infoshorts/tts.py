@@ -78,22 +78,101 @@ class EdgeEngine:
         return words
 
 
+KOKORO_REPO = "hexgrad/Kokoro-82M"
+KOKORO_DEFAULT_VOICE = "zf_xiaobei"  # 中文女聲；男聲 zm_yunjian / zm_yunxi
+
+
+def _rate_to_speed(rate: str) -> float:
+    """edge-tts 風格的 '+5%' → Kokoro speed 1.05。"""
+    m = re.fullmatch(r"([+-]?)(\d+(?:\.\d+)?)%", rate.strip())
+    if not m:
+        return 1.0
+    pct = float(m.group(2)) * (-1 if m.group(1) == "-" else 1)
+    return max(0.5, min(2.0, 1.0 + pct / 100))
+
+
+PAUSE_WEIGHT = {"。": 1.6, "！": 1.6, "？": 1.6, "；": 1.2, "，": 0.8, "、": 0.5, "：": 0.8, ".": 1.6, ",": 0.8}
+_SPREAD_RE = re.compile(r"[㐀-鿿]|[A-Za-z0-9][A-Za-z0-9.'-]*|[。！？；，、：.,]")
+
+
+def spread_words(text: str, start: float, duration: float) -> list[Word]:
+    """沒有逐字時間碼時的退路：把文字拆成字／英文詞，依字寬在 [start, start+duration] 內等比分配。
+
+    標點不輸出成詞，但佔停頓權重（PAUSE_WEIGHT），讓句尾的字幕不會提早結束。
+    """
+    tokens = _SPREAD_RE.findall(text)
+    if not tokens:
+        return []
+    weights = [PAUSE_WEIGHT.get(t, _width(t)) for t in tokens]
+    total = sum(weights)
+    out: list[Word] = []
+    t = start
+    for tok, w in zip(tokens, weights, strict=True):
+        d = duration * w / total
+        if tok not in PAUSE_WEIGHT:
+            out.append(Word(tok, t, t + d))
+        t += d
+    return out
+
+
 class KokoroEngine:
+    """離線備援：Kokoro-82M（CPU）。安裝：`uv sync --group kokoro`。
+
+    中文 pipeline（lang_code='z'）沒有逐詞時間碼，而且整段文字通常是單一 chunk，
+    字幕時間用 spread_words 依字寬＋標點停頓權重估算（ADR-013）。
+    """
+
     name = "kokoro"
 
-    def __init__(self, voice: str = "zf_xiaobei", rate: str = "+0%") -> None:
+    def __init__(self, voice: str = KOKORO_DEFAULT_VOICE, rate: str = "+0%") -> None:
         self.voice = voice
-        self.rate = rate
+        self.speed = _rate_to_speed(rate)
+        self._pipeline: Any = None
+
+    def _load(self) -> Any:
+        if self._pipeline is None:
+            try:
+                from kokoro import KPipeline
+            except ImportError as e:
+                raise RuntimeError("Kokoro 未安裝：uv sync --group kokoro") from e
+            self._pipeline = KPipeline(lang_code="z", repo_id=KOKORO_REPO)
+        return self._pipeline
 
     def synthesize(self, text: str, mp3_path: Path) -> list[Word]:
-        raise NotImplementedError("Kokoro 備援引擎排在 Phase 2（docs/TASKS.md）；請先用 --engine edge")
+        import numpy as np
+        import soundfile as sf
+
+        pipeline = self._load()
+        chunks: list[Any] = []
+        words: list[Word] = []
+        offset = 0.0
+        for r in pipeline(text, voice=self.voice, speed=self.speed):
+            if r.audio is None:
+                continue
+            audio = r.audio.numpy() if hasattr(r.audio, "numpy") else np.asarray(r.audio)
+            dur = len(audio) / SAMPLE_RATE
+            tokens = getattr(r, "tokens", None)
+            timed = [t for t in (tokens or []) if getattr(t, "start_ts", None) is not None]
+            if timed:
+                words.extend(Word(t.text, offset + float(t.start_ts), offset + float(t.end_ts)) for t in timed)
+            else:
+                words.extend(spread_words(r.graphemes, offset, dur))
+            chunks.append(audio)
+            offset += dur
+        if not chunks:
+            raise RuntimeError("Kokoro 沒有產生音訊")
+        wav = mp3_path.with_suffix(".kokoro.wav")
+        sf.write(str(wav), np.concatenate(chunks), SAMPLE_RATE)
+        ffmpeg.run(["-i", str(wav), "-c:a", "libmp3lame", "-q:a", "2", str(mp3_path)])
+        wav.unlink(missing_ok=True)
+        return words
 
 
 def make_engine(name: str, voice: str | None, rate: str) -> Engine:
     if name == "edge":
         return EdgeEngine(voice or DEFAULT_VOICE, rate)
     if name == "kokoro":
-        return KokoroEngine(voice or "zf_xiaobei", rate)
+        return KokoroEngine(voice or KOKORO_DEFAULT_VOICE, rate)
     raise ValueError(f"未知 TTS 引擎：{name}")
 
 
@@ -289,9 +368,13 @@ def synthesize_scenes(
             seg_len = ffmpeg.duration(wav)
             for c in build_cues(words, narration):
                 cues.append(Cue(t + c.start, min(t + c.end, t + speech + SCENE_BUFFER), c.text))
+            # 實際語音結束點（最後一個字的結尾；TTS 通常在段尾留約 0.7s 靜音），給 BGM ducking 用
+            speech_end = max((w.end for w in words), default=speech)
+            s["speech_end"] = round(t + min(speech_end, speech), 3)
         else:
             _silence_wav(wav, SILENT_SCENE)
             seg_len = SILENT_SCENE
+            s["speech_end"] = None
         s["start"] = round(t, 3)
         s["end"] = round(t + seg_len, 3)
         t += seg_len

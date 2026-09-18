@@ -51,9 +51,7 @@ def test_quote_and_table_narration() -> None:
     quote = next(s for s in scenes if s["type"] == "quote")
     assert quote["narration"] == "某人說，結論。"
     table = next(s for s in scenes if s["type"] == "table")
-    assert (
-        table["narration"] == "指數。道瓊，收盤四萬兩千一百，漲跌%上漲零點五個百分點；標普，收盤無資料，漲跌%無資料。"
-    )
+    assert table["narration"] == "指數。道瓊，收盤四萬兩千一百，漲跌上漲零點五個百分點；標普，收盤無資料，漲跌無資料。"
 
 
 def test_disclaimer_appended() -> None:

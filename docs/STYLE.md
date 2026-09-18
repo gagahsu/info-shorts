@@ -18,10 +18,14 @@ export const themes = {
     radius: 24,
     pad: 72,                 // 左右內距（1080 寬）
     safeTop: 250, safeBottom: 300,   // IG Reels UI 遮擋區
+    captionBg: "rgba(0,0,0,0.55)",
     captionSize: 56, captionY: 1500, // 字幕基線（距頂）
+    sizeTitle: 88, sizeNumber: 160, sizeBody: 52, sizeSmall: 40, lineHeight: 1.35,
+    enterFrames: 12, exitFrames: 8,  // 進場 spring 0.4s、退場淡出 0.25s（30fps）
   }
 } as const;
 ```
+（實際定義以 `remotion/src/theme.ts` 為準；元件內不可出現任何色碼，`grep -n '#' src/scenes` 應為空。）
 
 ## 版面規則
 

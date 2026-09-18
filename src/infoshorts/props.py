@@ -13,7 +13,9 @@ from typing import Any
 
 FPS = 30
 SIZES = {"9:16": (1080, 1920), "16:9": (1920, 1080)}
-BGM_VOLUME = 0.25
+BGM_VOLUME = 0.25  # 無旁白時
+DUCK_VOLUME = 0.08  # 旁白進行中（ducking）
+SCENE_BUFFER = 0.4  # 與 tts.SCENE_BUFFER 一致：每段旁白後的緩衝，這段不算「有聲」
 
 
 def to_frame(sec: float) -> int:
@@ -44,6 +46,13 @@ def build_props(
         if bgm.resolve() != target.resolve():
             shutil.copyfile(bgm, target)
 
+    # 有旁白的區間（frame），給 Remotion 做 BGM ducking；靜音 scene 不算
+    voice_ranges = [
+        [to_frame(s["start"]), to_frame(s.get("speech_end") or (s["end"] - SCENE_BUFFER))]
+        for s in scenes
+        if (s.get("narration") or "").strip()
+    ]
+
     return {
         "fps": FPS,
         "width": width,
@@ -51,7 +60,13 @@ def build_props(
         "durationInFrames": total_frames,
         "theme": theme,
         "kind": content.get("kind", "generic"),
-        "audio": {"voice": "voice.mp3", "bgm": bgm_name, "bgmVolume": BGM_VOLUME},
+        "audio": {
+            "voice": "voice.mp3",
+            "bgm": bgm_name,
+            "bgmVolume": BGM_VOLUME,
+            "duckVolume": DUCK_VOLUME,
+            "voiceRanges": voice_ranges,
+        },
         "captions": "voice.srt",
         "scenes": out_scenes,
     }

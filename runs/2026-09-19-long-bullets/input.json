@@ -1,0 +1,27 @@
+{
+  "id": "example-long-bullets",
+  "kind": "generic",
+  "title": "影片出片前檢查清單",
+  "subtitle": "八件事，一件都不能漏",
+  "date": "2026-09-22",
+  "disclaimer": false,
+  "sections": [
+    {
+      "type": "bullets",
+      "heading": "出片前檢查",
+      "items": [
+        "解析度 1080×1920",
+        "時長 30 到 60 秒",
+        "字幕不超過兩行",
+        "音量落在 -16 LUFS 附近",
+        "沒有黑幀",
+        "片尾有免責聲明",
+        "檔名含日期",
+        "QA 報告已存檔"
+      ],
+      "narration": null
+    },
+    {"type": "quote", "text": "清單不是限制，是保險。", "source": null, "narration": null}
+  ],
+  "bgm": null
+}

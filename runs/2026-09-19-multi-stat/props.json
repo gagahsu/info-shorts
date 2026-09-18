@@ -1,0 +1,140 @@
+{
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 1475,
+  "theme": "neutral",
+  "kind": "generic",
+  "audio": {
+    "voice": "voice.mp3",
+    "bgm": "bgm.mp3",
+    "bgmVolume": 0.25,
+    "duckVolume": 0.08,
+    "voiceRanges": [
+      [
+        0,
+        154
+      ],
+      [
+        193,
+        340
+      ],
+      [
+        380,
+        528
+      ],
+      [
+        567,
+        660
+      ],
+      [
+        698,
+        1195
+      ],
+      [
+        1234,
+        1301
+      ],
+      [
+        1340,
+        1436
+      ]
+    ]
+  },
+  "captions": "voice.srt",
+  "scenes": [
+    {
+      "type": "title",
+      "startFrame": 0,
+      "endFrame": 193,
+      "props": {
+        "title": "盤前三個數字",
+        "subtitle": "示範資料，非真實行情",
+        "date": "2026-09-23"
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 193,
+      "endFrame": 380,
+      "props": {
+        "label": "台指期夜盤",
+        "value": "23,456",
+        "delta": "+120",
+        "deltaDirection": "up",
+        "unit": "點"
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 380,
+      "endFrame": 567,
+      "props": {
+        "label": "費城半導體",
+        "value": "5,432.1",
+        "delta": "-0.8%",
+        "deltaDirection": "down",
+        "unit": ""
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 567,
+      "endFrame": 698,
+      "props": {
+        "label": "台積電 ADR 折溢價",
+        "value": null,
+        "delta": null,
+        "deltaDirection": null,
+        "unit": "%"
+      }
+    },
+    {
+      "type": "table",
+      "startFrame": 698,
+      "endFrame": 1234,
+      "props": {
+        "heading": "美股三大指數",
+        "columns": [
+          "指數",
+          "收盤",
+          "漲跌%"
+        ],
+        "rows": [
+          [
+            "道瓊",
+            "42,100",
+            "+0.5%"
+          ],
+          [
+            "標普 500",
+            "5,700",
+            "-0.2%"
+          ],
+          [
+            "那斯達克",
+            "18,200",
+            "+1.1%"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "quote",
+      "startFrame": 1234,
+      "endFrame": 1340,
+      "props": {
+        "text": "數字是示範用，別當真。",
+        "source": null
+      }
+    },
+    {
+      "type": "disclaimer",
+      "startFrame": 1340,
+      "endFrame": 1475,
+      "props": {
+        "text": "以上內容僅供參考，不構成任何投資建議。投資有風險，請自行審慎評估。"
+      }
+    }
+  ]
+}

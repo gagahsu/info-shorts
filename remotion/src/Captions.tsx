@@ -42,7 +42,7 @@ export const Captions: React.FC<{file: string}> = ({file}) => {
     >
       <div
         style={{
-          background: 'rgba(0,0,0,0.55)',
+          background: theme.captionBg,
           color: theme.text,
           fontFamily: theme.fontDisplay,
           fontSize: theme.captionSize,

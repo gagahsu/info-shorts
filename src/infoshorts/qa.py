@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 import re
 import subprocess
 from dataclasses import asdict, dataclass, field
@@ -85,12 +86,23 @@ def _black_runs(video: Path) -> list[tuple[float, float]]:
     return runs
 
 
+def _escape_lavfi_path_windows(path: str) -> str:
+    p = path.replace("\\", "/").replace("'", "\\'").replace(":", "\\:")
+    return f"'{p}'"
+
+
 def run_qa(video: Path, props: dict[str, Any]) -> Report:
     ffmpeg.export_env()  # Kinocut 讀 KINOCUT_FFMPEG_EXECUTABLE，必須在 import 前設好
     logging.getLogger("kinocut").setLevel(logging.CRITICAL)  # 它的 warning 很吵，結果都在 report 裡
+    import kinocut.quality_guardrails as kq
     from kinocut.engine_probe import probe
     from kinocut.quality_guardrails import quality_check
     from kinocut.watching.metrics import run_metric_qc
+
+    if os.name == "nt":
+        # kinocut 1.15 的 movie= filter 路徑逃脫沒有加引號，Windows 磁碟機的冒號會讓 ffmpeg 讀成 'C'。
+        # 用單引號包住（'C\:/path'）ffmpeg 才吃得下；kinocut 升版修好後可移除。
+        kq._escape_lavfi_path = _escape_lavfi_path_windows  # type: ignore[attr-defined]
 
     checks: list[Check] = []
     advisory: list[str] = []

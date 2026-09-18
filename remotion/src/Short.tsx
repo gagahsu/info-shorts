@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {AbsoluteFill, Audio, Sequence, cancelRender, continueRender, delayRender, staticFile} from 'remotion';
+import {Bgm} from './Bgm';
 import {Captions} from './Captions';
 import {fontsReady} from './fonts';
 import {getTheme} from './theme';
@@ -52,7 +53,14 @@ export const Short: React.FC<ShortProps> = (props) => {
           );
         })}
         {props.audio.voice ? <Audio src={staticFile(props.audio.voice)} /> : null}
-        {props.audio.bgm ? <Audio src={staticFile(props.audio.bgm)} volume={props.audio.bgmVolume} loop /> : null}
+        {props.audio.bgm ? (
+          <Bgm
+            file={props.audio.bgm}
+            volume={props.audio.bgmVolume}
+            duckVolume={props.audio.duckVolume}
+            voiceRanges={props.audio.voiceRanges}
+          />
+        ) : null}
         {props.captions ? <Captions file={props.captions} /> : null}
       </AbsoluteFill>
     </ThemeProvider>

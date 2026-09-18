@@ -1,0 +1,36 @@
+{
+  "id": "example-text-only",
+  "kind": "generic",
+  "title": "遠端工作三個原則",
+  "subtitle": "沒有數字，只有觀念",
+  "date": "2026-09-21",
+  "disclaimer": false,
+  "sections": [
+    {
+      "type": "quote",
+      "text": "寫下來，才算溝通過。",
+      "source": null,
+      "narration": "第一個原則：寫下來，才算溝通過。口頭講的東西，隔天就沒人記得。"
+    },
+    {
+      "type": "bullets",
+      "heading": "怎麼做",
+      "items": [
+        "每個決定都有一則訊息",
+        "會議一定有紀錄",
+        "問題先搜尋再開口"
+      ],
+      "narration": null
+    },
+    {
+      "type": "quote",
+      "text": "非同步不是慢，是尊重別人的時間。",
+      "source": "某位主管",
+      "narration": null
+    }
+  ],
+  "bgm": null,
+  "lang": "zh-TW",
+  "aspect": "9:16",
+  "target_duration": 45
+}

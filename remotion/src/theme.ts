@@ -19,6 +19,7 @@ export const themes = {
     pad: 72,
     safeTop: 250,
     safeBottom: 300,
+    captionBg: 'rgba(0,0,0,0.55)',
     captionSize: 56,
     captionY: 1500,
     // 字級（docs/STYLE.md）

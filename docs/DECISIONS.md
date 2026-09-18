@@ -46,3 +46,17 @@
 ## ADR-011 2026-09-18 字幕切分對照旁白原文的標點
 - 決策：edge-tts 的 WordBoundary 不含標點，`tts.py` 把事件對回旁白原文找出詞前標點：句號／分號必切，逗號累積 ≥ 4 字才切，超長時回溯到最近逗號。
 - 理由：純按 14 字硬切會把「內建」這類詞切成兩半；對照原文成本低且不需要額外模型。
+
+## ADR-012 2026-09-19 qa.py 對 Kinocut 的 Windows 路徑問題做 monkeypatch
+- 問題：kinocut 1.15 `quality_guardrails._escape_lavfi_path` 對 `movie=` filter 只逃脫不加引號，Windows 磁碟機的冒號讓 ffmpeg 讀成 'C'，亮度／對比／飽和全部「analysis failed」。
+- 決策：`qa.py` 在 Windows 上把該函式換成「單引號包住 + `\:`」版本（實測 ffmpeg 8 可讀）。升版 kinocut 修好後移除。
+- 理由：只影響 advisory 檢查，但有分析結果才能在 Phase 2 之後調亮度；改法一行，風險低。
+
+## ADR-013 2026-09-19 Kokoro 中文備援的字幕時間用等比估算
+- 事實：`KPipeline(lang_code='z')` 回傳的 tokens 是 None（只有英文 G2P 有 start_ts/end_ts），而且整段旁白通常是單一 chunk（實測 8.9s 一段）。
+- 決策：在該段音訊長度內依字寬（中文 1、英數 0.5）＋標點停頓權重（句號 1.6、逗號 0.8…）等比分配每個字的起迄。
+- 後果：Kokoro 模式字幕可能早晚 0.3–0.8s；只在 edge-tts 失效時使用，不追求同等精度。實測 CPU 合成速度約 0.6× 即時（8.9s 語音 15s）。
+
+## ADR-014 2026-09-19 BGM ducking 在 Remotion 內以 frame 函數實作
+- 決策：`props.audio.voiceRanges`（有旁白的 frame 區間，由 props.py 從 scenes 推得）→ `Bgm.tsx` 的 `volume={(f) => …}`：無旁白 0.25、旁白中 0.08、8 frame 斜坡、片尾 1s 淡出。
+- 理由：不用先在 ffmpeg 混音（保持「Remotion 是唯一合成點」），且 Remotion 會把音量函數烘進輸出。

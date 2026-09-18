@@ -1,0 +1,76 @@
+{
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 934,
+  "theme": "neutral",
+  "kind": "generic",
+  "audio": {
+    "voice": "voice.mp3",
+    "bgm": null,
+    "bgmVolume": 0.25,
+    "duckVolume": 0.08,
+    "voiceRanges": [
+      [
+        0,
+        184
+      ],
+      [
+        208,
+        431
+      ],
+      [
+        455,
+        717
+      ],
+      [
+        740,
+        909
+      ]
+    ]
+  },
+  "captions": "voice.srt",
+  "scenes": [
+    {
+      "type": "title",
+      "startFrame": 0,
+      "endFrame": 208,
+      "props": {
+        "title": "遠端工作三個原則",
+        "subtitle": "沒有數字，只有觀念",
+        "date": "2026-09-21"
+      }
+    },
+    {
+      "type": "quote",
+      "startFrame": 208,
+      "endFrame": 455,
+      "props": {
+        "text": "寫下來，才算溝通過。",
+        "source": null
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 455,
+      "endFrame": 740,
+      "props": {
+        "heading": "怎麼做",
+        "items": [
+          "每個決定都有一則訊息",
+          "會議一定有紀錄",
+          "問題先搜尋再開口"
+        ]
+      }
+    },
+    {
+      "type": "quote",
+      "startFrame": 740,
+      "endFrame": 934,
+      "props": {
+        "text": "非同步不是慢，是尊重別人的時間。",
+        "source": "某位主管"
+      }
+    }
+  ]
+}

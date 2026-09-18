@@ -8,7 +8,7 @@ export const sampleProps: ShortProps = {
   durationInFrames: 30 * 16,
   theme: 'neutral',
   kind: 'generic',
-  audio: {voice: null, bgm: null, bgmVolume: 0.25},
+  audio: {voice: null, bgm: null, bgmVolume: 0.25, duckVolume: 0.08, voiceRanges: []},
   captions: null,
   scenes: [
     {type: 'title', startFrame: 0, endFrame: 90, props: {title: '本週三件事', subtitle: 'AI 影片工具速覽', date: '2026-09-20'}},

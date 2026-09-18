@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -49,12 +50,18 @@ def _table_narration(s: dict[str, Any]) -> str:
     for row in rows:
         cells = [fmt.value_to_zh(v) for v in row]
         if len(cols) == len(cells) and len(cells) > 1:
-            rest = "，".join(f"{cols[i]}{cells[i]}" for i in range(1, len(cells)))
+            names = [_column_name(c) for c in cols]
+            rest = "，".join(f"{names[i]}{cells[i]}" for i in range(1, len(cells)))
             lines.append(f"{cells[0]}，{rest}")
         else:
             lines.append("，".join(cells))
     head = s.get("heading") or ""
     return (head + "。" if head else "") + "；".join(lines) + "。"
+
+
+def _column_name(col: str) -> str:
+    """欄名的單位標記不讀：「漲跌%」→「漲跌」、「收盤(點)」→「收盤」。"""
+    return re.sub(r"[\s（(]*[%％][）)]*$|[（(][^）)]*[）)]$", "", col).strip()
 
 
 def _quote_narration(s: dict[str, Any]) -> str:

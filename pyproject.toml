@@ -16,6 +16,8 @@ infoshorts = "infoshorts.cli:app"
 
 [dependency-groups]
 dev = ["ruff>=0.6", "pyright>=1.1.380", "pytest>=8"]
+# edge-tts 失效時的備援（CPU 推論；torch 約 200 MB，模型首次使用會從 Hugging Face 下載約 330 MB）
+kokoro = ["kokoro>=0.9.4", "misaki[zh]>=0.9.4", "soundfile>=0.12"]
 
 [build-system]
 requires = ["hatchling"]
