@@ -1,0 +1,10 @@
+runs/*/out/
+runs/*/voice.mp3
+*.mp4
+*.mp3
+*.wav
+__pycache__/
+.venv/
+node_modules/
+remotion/out/
+.env
