@@ -2,9 +2,15 @@
   "fps": 30,
   "width": 1080,
   "height": 1920,
-  "durationInFrames": 2269,
-  "theme": "neutral",
+  "durationInFrames": 2267,
+  "theme": "paper",
   "kind": "company",
+  "meta": {
+    "title": "京元電子（2449）",
+    "date": "2026-09-19",
+    "brand": "台股筆記",
+    "disclaimer": true
+  },
   "audio": {
     "voice": "voice.mp3",
     "bgm": null,
@@ -21,27 +27,27 @@
       ],
       [
         419,
-        665
+        663
       ],
       [
-        704,
-        871
+        702,
+        869
       ],
       [
-        911,
-        1434
+        909,
+        1432
       ],
       [
-        1474,
-        1836
+        1472,
+        1834
       ],
       [
-        1875,
-        2095
+        1873,
+        2093
       ],
       [
-        2134,
-        2230
+        2132,
+        2228
       ]
     ]
   },
@@ -69,7 +75,7 @@
     {
       "type": "bullets",
       "startFrame": 419,
-      "endFrame": 704,
+      "endFrame": 702,
       "props": {
         "heading": "主要產品／服務",
         "items": [
@@ -81,8 +87,8 @@
     },
     {
       "type": "stat",
-      "startFrame": 704,
-      "endFrame": 911,
+      "startFrame": 702,
+      "endFrame": 909,
       "props": {
         "label": "2026年8月營收",
         "value": 40.8,
@@ -95,8 +101,8 @@
     },
     {
       "type": "table",
-      "startFrame": 911,
-      "endFrame": 1474,
+      "startFrame": 909,
+      "endFrame": 1472,
       "props": {
         "heading": "近期月營收",
         "columns": [
@@ -125,8 +131,8 @@
     },
     {
       "type": "bullets",
-      "startFrame": 1474,
-      "endFrame": 1875,
+      "startFrame": 1472,
+      "endFrame": 1873,
       "props": {
         "heading": "主要競爭對手",
         "items": [
@@ -139,8 +145,8 @@
     },
     {
       "type": "bullets",
-      "startFrame": 1875,
-      "endFrame": 2134,
+      "startFrame": 1873,
+      "endFrame": 2132,
       "props": {
         "heading": "未來展望",
         "items": [
@@ -151,8 +157,8 @@
     },
     {
       "type": "disclaimer",
-      "startFrame": 2134,
-      "endFrame": 2269,
+      "startFrame": 2132,
+      "endFrame": 2267,
       "props": {
         "text": "以上內容僅供參考，不構成任何投資建議。投資有風險，請自行審慎評估。"
       }

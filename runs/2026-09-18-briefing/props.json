@@ -3,8 +3,14 @@
   "width": 1080,
   "height": 1920,
   "durationInFrames": 2123,
-  "theme": "neutral",
+  "theme": "paper",
   "kind": "briefing",
+  "meta": {
+    "title": "台股盤前速報",
+    "date": "2026-09-18",
+    "brand": null,
+    "disclaimer": true
+  },
   "audio": {
     "voice": "voice.mp3",
     "bgm": null,
@@ -70,6 +76,7 @@
         "value": "47,160",
         "delta": "+701",
         "deltaPct": "+1.51%",
+        "deltaKind": "change",
         "deltaDirection": "up",
         "unit": "點"
       }
@@ -139,6 +146,7 @@
         "value": "13.18",
         "delta": null,
         "deltaPct": null,
+        "deltaKind": "change",
         "deltaDirection": null,
         "unit": "%"
       }

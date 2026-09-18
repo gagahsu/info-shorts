@@ -15,6 +15,7 @@
       "delta_pct": "+1.51%",
       "unit": "點",
       "narration": null,
+      "delta_kind": "change",
       "delta_direction": "up"
     },
     {
@@ -75,6 +76,7 @@
       "unit": "%",
       "narration": null,
       "delta_pct": null,
+      "delta_kind": "change",
       "delta_direction": null
     },
     {
@@ -105,5 +107,6 @@
   ],
   "lang": "zh-TW",
   "aspect": "9:16",
+  "brand": null,
   "bgm": null
 }
