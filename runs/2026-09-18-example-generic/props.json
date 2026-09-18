@@ -1,0 +1,60 @@
+{
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 676,
+  "theme": "neutral",
+  "kind": "generic",
+  "audio": {
+    "voice": "voice.mp3",
+    "bgm": null,
+    "bgmVolume": 0.25
+  },
+  "captions": "voice.srt",
+  "scenes": [
+    {
+      "type": "title",
+      "startFrame": 0,
+      "endFrame": 162,
+      "props": {
+        "title": "本週三件事",
+        "subtitle": "AI 影片工具速覽",
+        "date": "2026-09-20"
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 162,
+      "endFrame": 284,
+      "props": {
+        "label": "Kinocut MCP tools",
+        "value": "190+",
+        "delta": null,
+        "deltaDirection": null,
+        "unit": ""
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 284,
+      "endFrame": 557,
+      "props": {
+        "heading": "為什麼重要",
+        "items": [
+          "不用猜 ffmpeg 參數",
+          "內建品質檢查",
+          "本機免費"
+        ]
+      }
+    },
+    {
+      "type": "quote",
+      "startFrame": 557,
+      "endFrame": 676,
+      "props": {
+        "text": "先把 Kinocut 用起來，再談 Remotion。",
+        "source": null
+      }
+    }
+  ]
+}

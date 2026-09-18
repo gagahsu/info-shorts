@@ -27,3 +27,22 @@
 
 ## ADR-007 2026-09-18 QA 由 Kinocut 執行，QA 未過不算完成
 - 理由：無人工介入的排程出片必須有機械化把關。
+
+## ADR-008 2026-09-18 執行環境改為 Windows 原生（不走 WSL2）
+- 決策：pipeline（uv/Python 3.11、Node 22、FFmpeg 8、Kinocut）全部在 Windows 原生跑；`docs/SETUP.md` 改寫。
+- 理由：repo 與 Claude Code 都在 Windows；WSL 缺 node/ffmpeg 且 sudo 需要密碼（無法無人值守安裝）；Remotion 在 /mnt/c 上 render 很慢。
+- 後果：程式碼維持跨平台（路徑用 pathlib、ffmpeg 自動定位、Remotion 用 `--public-dir` 而非絕對路徑）；WSL/Linux 仍可依 SETUP §7 執行。
+
+## ADR-009 2026-09-18 Python 依賴用 uv 管理；Kinocut 以 Python API 做 QA
+- 決策：`pyproject.toml` + `uv sync`；`kinocut` 列為執行依賴，`qa.py` 直接 import 它的 `probe` / `quality_check` / `run_metric_qc`。
+- 理由：uv 已在機器上、能自動抓 3.11；MCP 是給 Claude 互動用，pipeline 內同進程呼叫更簡單、可測。
+- 風險：Kinocut 這些模組不是公開 API，升版可能變動 → `pyproject` 釘 `>=1.15`，升版時跑 `infoshorts qa` 驗證。
+- 補充：Kinocut 需要 FFmpeg 6+，本機 PATH 上是 miniconda 的 4.3 → `ffmpeg.py` 自動選 winget 的 8.1 並設 `KINOCUT_FFMPEG_EXECUTABLE`。
+
+## ADR-010 2026-09-18 音訊／字幕以「相對 run 目錄」交給 Remotion
+- 決策：props.json 內 `audio.voice = "voice.mp3"`、`captions = "voice.srt"`，render 時 `--public-dir=runs/<run>`，元件用 `staticFile()`。
+- 理由：Remotion 不能直接讀任意絕對路徑；用 public-dir 免複製檔案、免處理 Windows/WSL 路徑差異。
+
+## ADR-011 2026-09-18 字幕切分對照旁白原文的標點
+- 決策：edge-tts 的 WordBoundary 不含標點，`tts.py` 把事件對回旁白原文找出詞前標點：句號／分號必切，逗號累積 ≥ 4 字才切，超長時回溯到最近逗號。
+- 理由：純按 14 字硬切會把「內建」這類詞切成兩半；對照原文成本低且不需要額外模型。

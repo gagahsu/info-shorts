@@ -1,0 +1,39 @@
+{
+  "id": "example-generic",
+  "kind": "generic",
+  "title": "本週三件事",
+  "subtitle": "AI 影片工具速覽",
+  "date": "2026-09-20",
+  "lang": "zh-TW",
+  "aspect": "9:16",
+  "target_duration": 45,
+  "disclaimer": false,
+  "sections": [
+    {
+      "type": "stat",
+      "label": "Kinocut MCP tools",
+      "value": "190+",
+      "delta": null,
+      "unit": "",
+      "narration": null,
+      "delta_direction": null
+    },
+    {
+      "type": "bullets",
+      "heading": "為什麼重要",
+      "items": [
+        "不用猜 ffmpeg 參數",
+        "內建品質檢查",
+        "本機免費"
+      ],
+      "narration": null
+    },
+    {
+      "type": "quote",
+      "text": "先把 Kinocut 用起來，再談 Remotion。",
+      "source": null,
+      "narration": null
+    }
+  ],
+  "bgm": null
+}

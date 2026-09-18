@@ -51,8 +51,9 @@ edge-tts --voice zh-TW-HsiaoChenNeural --rate=+5% \
   --write-media runs/<run>/voice.mp3 --write-subtitles runs/<run>/voice.srt
 ```
 - `narration.txt`＝各 scene 旁白依序串接，段落間用 `。` 與換行分隔；每段前後在文字裡插入標記句（例如全形空格＋停頓）不可行時，改成**每段各自合成一個 mp3**，再用 ffmpeg concat 並記錄各段時長 → 這是預設做法，時間更準。
-- 回填每個 scene 的 `start/end`＝該段音檔在整體中的位置；scene 顯示長度＝旁白長度 + 0.4s。
-- srt 合併時要位移時間碼；字幕切分：≤14 字、≤2 行。
+- 回填每個 scene 的 `start/end`＝該段音檔在整體中的位置；scene 顯示長度＝旁白長度 + 0.4s；無旁白的 scene 固定 2.5s（靜音 wav）。
+- 實作：`tts.py` 用 edge-tts Python API（`boundary="WordBoundary"`）拿逐詞時間碼，每段 mp3 → 補 0.4s 靜音的 wav → concat demuxer → `loudnorm` 到 -16 LUFS → voice.mp3。
+- srt 合併時要位移時間碼；字幕切分（ADR-011）：≤14 字寬（英數算半字）、句號／分號必切、逗號累積 ≥4 字才切、詞間停頓 >0.35s 切、超長回溯到最近逗號。標點來自對照旁白原文（edge-tts 事件不含標點）。
 - 聲音選項：`zh-TW-HsiaoChenNeural`（女，預設）、`zh-TW-YunJheNeural`（男）；用 `edge-tts --list-voices | grep zh-TW` 查最新清單。
 - edge-tts 失敗 → 切 Kokoro（SETUP §5），介面相同（輸入文字，輸出 mp3；srt 由 Kokoro 的 timestamps 產）。
 
@@ -75,13 +76,17 @@ edge-tts --voice zh-TW-HsiaoChenNeural --rate=+5% \
 ## Step 5 — Remotion render
 
 ```bash
-cd remotion && npx remotion render src/index.ts Short ../runs/<run>/out/<run>.mp4 --props=../runs/<run>/props.json --concurrency=2
+cd remotion && npx remotion render src/index.ts Short ../runs/<run>/out/<run>.mp4 --props=../runs/<run>/props.json --public-dir=../runs/<run> --concurrency=2
 ```
+`--public-dir` 指到 run 目錄，props 內的 `audio.voice` / `captions` 是相對檔名，元件用 `staticFile()` 讀（ADR-010）。
 GPU 等級不高 → `--concurrency` 保守；45 秒影片 CPU render 預期 1–3 分鐘。
 
 ## Step 6 — QA（Kinocut）
 
-檢查項目：時長與 props 一致（±0.5s）、1080×1920、音量 mean 在 -20 ~ -14 dBFS、無連續黑幀 > 0.5s、音訊與影片等長。任一失敗 → `qa.py` 回傳非零，Claude 報告原因。
+檢查項目（`qa.py`，直接 import kinocut 的 Python API）：時長與 props 一致（±0.5s）、1080×1920、音訊與影片等長（±0.5s）、
+整體音量 -20 ~ -12 LUFS 且 true peak ≤ -1 dBTP（Kinocut `quality_check` 的 audio_levels）、無連續黑幀 > 0.5s（blackdetect，pix_th 0.04 以免深灰底誤判）。
+Kinocut 的亮度／對比／飽和／色偏只列 advisory（深色 theme 天生偏暗；且它在 Windows 路徑上目前會分析失敗）。
+任一硬性檢查失敗 → `infoshorts build` 退出碼 2，`qa.json` 留在 run 目錄，Claude 報告原因。
 
 ## 一鍵指令
 

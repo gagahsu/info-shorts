@@ -1,10 +1,24 @@
+# 產物
 runs/*/out/
+runs/*/seg/
 runs/*/voice.mp3
+runs/*/voice.wav
+runs/*/bgm.*
 *.mp4
 *.mp3
 *.wav
+
+# Python
 __pycache__/
 .venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Node / Remotion
 node_modules/
 remotion/out/
+remotion/public/
+
+# 其他
 .env

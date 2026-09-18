@@ -2,37 +2,38 @@
 
 > Claude：開工前讀「當前階段」。完成一項就勾掉並在 Log 加一行。不跳階段。
 
-## 當前階段：Phase 0
+## 當前階段：Phase 1 收尾 → Phase 2
 
 ---
 
 ## Phase 0 — 環境與骨架
-- [ ] 依 `docs/SETUP.md` 完成環境，通過驗證
-- [ ] 確認 Kinocut MCP 啟動指令，更新 `.mcp.json`
-- [ ] `pyproject.toml`（套件 `infoshorts`，CLI `infoshorts`），ruff/pyright/pytest
-- [ ] `remotion/` 骨架（TypeScript blank），`theme.ts` 放入 neutral token
-- [ ] `schemas/content.schema.json` 定稿，`examples/generic.json` 一份
-- **驗收**：`infoshorts --help`；`npx remotion studio` 開得起來；kinocut 連線
+- [x] 依 `docs/SETUP.md` 完成環境，通過驗證（改為 Windows 原生，見 ADR-008）
+- [x] 確認 Kinocut MCP 啟動指令，更新 `.mcp.json`（`uvx --from kinocut kino --mcp` + FFmpeg 8 環境變數）
+- [x] `pyproject.toml`（套件 `infoshorts`，CLI `infoshorts`），ruff/pyright/pytest
+- [x] `remotion/` 骨架（TypeScript strict），`theme.ts` 放入 neutral token
+- [x] `schemas/content.schema.json` 定稿，`examples/generic.json` 一份
+- **驗收**：`uv run infoshorts --help` ✓；`npx remotion studio` 開得起來 ✓（`src/sample.ts` 假資料）；kinocut MCP stdio 連線 ✓（196 tools）
 
 ## Phase 1 — Core 最小可用（generic adapter）
-- [ ] `adapters/generic.py` + fixture 測試
-- [ ] `scenes.py`：title 自動插入、section→scene、bullets 拆分
-- [ ] `format.py`：數字／百分比／日期中文讀法 + 單元測試
-- [ ] `tts.py`：每段各自合成 → concat → 回填時間 → 合併 srt（時間碼位移）→ 字幕切分規則
-- [ ] `props.py`
-- [ ] Remotion `Short.tsx` + scenes：title / stat / bullets / quote（table、disclaimer 留 Phase 2）
-- [ ] `@remotion/captions` 字幕層，讀 srt
-- [ ] `qa.py` 接 Kinocut：時長、解析度、音量、黑幀
-- [ ] `infoshorts build` 串起全部；`--dry-run`
-- **驗收**：`examples/generic.json` → 一支 45s 9:16 mp4，字幕與語音對齊、QA 通過
+- [x] `adapters/generic.py` + fixture 測試
+- [x] `scenes.py`：title 自動插入、section→scene、bullets 拆分
+- [x] `format.py`：數字／百分比／日期中文讀法 + 單元測試
+- [x] `tts.py`：每段各自合成 → concat → 回填時間 → 合併 srt（時間碼位移）→ 字幕切分規則（對照原文標點，ADR-011）
+- [x] `props.py`
+- [x] Remotion `Short.tsx` + scenes：title / stat / bullets / quote（table、disclaimer 也一併做了，見 Phase 2）
+- [x] `@remotion/captions` 字幕層，讀 srt
+- [x] `qa.py` 接 Kinocut：時長、解析度、音量（LUFS）、黑幀
+- [x] `infoshorts build` 串起全部；`--dry-run`
+- **驗收**：`examples/generic.json` → 一支 9:16 mp4（22.6s；example 內容短，45s 是目標不是下限），字幕與語音對齊、QA 通過
 
 ## Phase 2 — 補齊 scene 與細節
-- [ ] `table` scene、`disclaimer` scene（`disclaimer: true` 自動插入）
-- [ ] BGM 支援 + voice ducking
+- [x] `table` scene、`disclaimer` scene（`disclaimer: true` 自動插入）— Phase 1 順手做完，尚未用真實資料驗證
+- [ ] BGM 支援 + voice ducking（`--bgm` 已能混入固定 0.25 音量，ducking 未做）
 - [ ] 數字 counting-up 動畫
-- [ ] 漲跌顏色 `deltaColor(kind, dir)`
-- [ ] Kokoro 備援引擎 `--engine kokoro`
+- [x] 漲跌顏色 `deltaColor(kind, dir)`（theme.ts）
+- [ ] Kokoro 備援引擎 `--engine kokoro`（介面已留，`KokoroEngine` 目前 raise NotImplementedError）
 - [ ] 三支不同內容的 generic 測試（純文字、長 bullets、多 stat）
+- [ ] Kinocut 視覺檢查（亮度／對比）在 Windows 路徑上失敗（`movie=` filter 的磁碟機冒號逃脫問題），目前只列 advisory；回報上游或等升版
 - **驗收**：所有 scene 型態都有 example 可 render；換 `theme` 不改元件
 
 ## Phase 3 — 兩個 adapter
@@ -58,3 +59,7 @@
 
 ## Log
 - 2026-09-18：專案文件初版（尚未開始 Phase 0）
+- 2026-09-18：Phase 0 完成。執行環境改 Windows 原生（ADR-008）；uv + Python 3.11、Node 22、Remotion 4.0.526、FFmpeg 8.1（winget）、kinocut 1.15。
+- 2026-09-18：Phase 1 完成。`examples/generic.json` 全流程出片（TTS edge-tts → Remotion render 676 frames 約 1 分鐘 → Kinocut QA）。
+  修過的坑：(1) 字幕硬切 14 字會把詞切半 → 對照原文標點切（ADR-011）；(2) blackdetect 預設 pix_th=0.10 把深灰底空曠畫面當黑幀 → 改 0.04；
+  (3) 旁白 -19.5 LUFS 貼近下限 → 最終混音 loudnorm 到 -16；(4) Kinocut signalstats 在 Windows 路徑失敗 → 只列 advisory。

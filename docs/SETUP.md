@@ -1,42 +1,83 @@
-# SETUP — WSL2
+# SETUP
 
-與 trip-cut 相同基礎（WSL2 Ubuntu、Node 22、Python 3.11、Kinocut），差別：**不裝 Whisper**，多裝 edge-tts。
+> 2026-09-18 定案（ADR-008）：**Windows 原生**執行，不走 WSL2。repo 在 `C:\Users\<you>\workspace\info-shorts`，
+> Claude Code 也在 Windows 跑；WSL 沒有 sudo 免密碼、沒 node、沒 ffmpeg，而 Windows 側全部都有。
+> 程式碼本身跨平台（只靠 uv / node / ffmpeg 在 PATH 或可定位），之後要搬去 WSL/Linux 只需照 §7 裝依賴。
 
-## 1. 系統
-```bash
-sudo apt update && sudo apt install -y ffmpeg python3.11 python3.11-venv build-essential \
-  libnss3 libatk-bridge2.0-0 libdrm2 libxkbcommon0 libgbm1 libasound2 libxshmfence1 fonts-noto-cjk
+## 1. 需要的東西（Windows）
+
+| 工具 | 版本 | 來源 | 檢查 |
+|---|---|---|---|
+| uv | 0.12+ | https://docs.astral.sh/uv/ | `uv --version` |
+| Python | 3.11（uv 會自己抓） | `uv python install 3.11` | `uv run python --version` |
+| Node.js | 22+ | nvm-windows / nodejs.org | `node --version` |
+| FFmpeg | **6+**（Kinocut 硬性要求） | `winget install Gyan.FFmpeg` | 見 §4 |
+| 字型 | 不用裝 | Remotion 用 `@remotion/google-fonts`（Noto Sans TC）render 時自動抓 | — |
+
+不需要 GPU、不需要 Chrome（Remotion 自帶 headless shell）。
+
+## 2. Python（uv）
+
+```powershell
+cd C:\Users\<you>\workspace\info-shorts
+uv sync            # 建 .venv、裝 edge-tts / kinocut / typer / jsonschema / pydantic + dev（ruff/pyright/pytest）
+uv run infoshorts doctor
+uv run infoshorts voices     # 列 zh-TW 聲音
 ```
 
-## 2. Python
-```bash
-cd ~/info-shorts && python3.11 -m venv .venv && source .venv/bin/activate
-pip install -U pip edge-tts jsonschema typer pydantic ruff pyright pytest kinocut
-pip install -e .
-edge-tts --list-voices | grep zh-TW
-```
+`uv sync` 會裝 `kinocut`（Python 套件內含 `kino` CLI 與 MCP server）。
 
 ## 3. Node / Remotion
-```bash
-curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash - && sudo apt install -y nodejs
-cd remotion && npm install && npx remotion browser ensure
-npm i @remotion/captions   # 字幕層
+
+```powershell
+cd remotion
+npm install
+npx remotion browser ensure   # 下載 headless shell（約 110 MB，一次）
+npx remotion studio           # 預覽（用 src/sample.ts 的假資料）
 ```
-字體：`fonts-noto-cjk` 已裝；Remotion 內用 `@remotion/google-fonts` 或本機字體皆可，render 時確認中文不變豆腐。
 
-## 4. Kinocut MCP
-同 trip-cut：`.mcp.json` 為 placeholder，Phase 0 依 README 確認啟動指令。
+## 4. FFmpeg 版本陷阱（重要）
 
-## 5. Kokoro TTS（edge-tts 備援）
-```bash
-pip install kokoro soundfile   # 依 https://github.com/hexgrad/kokoro README，中文需要對應 voice pack
+Windows 上 PATH 常被 miniconda 的 FFmpeg **4.x** 搶先，Kinocut 會判定「too old」。
+本專案的 `src/infoshorts/ffmpeg.py` 會自己找夠新的版本，順序：
+
+1. 環境變數 `INFOSHORTS_FFMPEG_DIR`（含 ffmpeg.exe 的目錄）
+2. 環境變數 `KINOCUT_FFMPEG_EXECUTABLE` 所在目錄
+3. `%LOCALAPPDATA%\Microsoft\WinGet\Packages\Gyan.FFmpeg*\ffmpeg-*\bin`
+4. PATH 上的 `ffmpeg`
+
+並在呼叫 Kinocut 前設定 `KINOCUT_FFMPEG_EXECUTABLE` / `KINOCUT_FFPROBE_EXECUTABLE`。
+`uv run infoshorts doctor` 會印出實際選到的路徑。
+
+## 5. Kinocut MCP（給 Claude Code 用）
+
+`.mcp.json` 已設定：`uvx --from kinocut kino --mcp`，並透過 `env` 指定 FFmpeg 8 的路徑
+（用 `${VAR:-default}` 語法，換機器時設環境變數 `KINOCUT_FFMPEG_EXECUTABLE` 即可覆蓋）。
+Claude Code 內 `/mcp` 應看到 `kinocut`，196 個 tools。
+
+pipeline 的 `qa.py` **不走 MCP**，直接 import `kinocut` 的 Python API（probe / quality_check / metric_qc），
+MCP 只是給 Claude 互動用。
+
+## 6. Kokoro TTS（edge-tts 備援，Phase 2）
+
+```powershell
+uv pip install kokoro soundfile   # 依 https://github.com/hexgrad/kokoro README，中文需要對應 voice pack
 ```
-只在 edge-tts 失效時啟用；`tts.py` 以 `--engine kokoro` 切換。
+`tts.py` 已留 `--engine kokoro` 介面，實作排在 Phase 2。
 
-## 6. GPU 備註
-本專案不需要 GPU。Remotion render 用 CPU，`--concurrency=2`。
+## 7. 若要改在 WSL2 / Linux 跑
 
-## 驗證
-- [ ] `edge-tts` 能產 zh-TW mp3 + srt
-- [ ] `npx remotion studio` 可開，中文字體正常
-- [ ] Claude Code `/mcp` 看到 kinocut
+```bash
+sudo apt install -y ffmpeg nodejs npm fonts-noto-cjk libnss3 libatk-bridge2.0-0 libgbm1 libasound2
+curl -LsSf https://astral.sh/uv/install.sh | sh
+uv sync && (cd remotion && npm install && npx remotion browser ensure)
+```
+Ubuntu 24.04 的 apt ffmpeg 是 6.1，符合 Kinocut。程式碼不用改。
+
+## 驗證清單
+
+- [x] `uv run infoshorts --help` / `doctor`
+- [x] `edge-tts` 能產 zh-TW mp3 + WordBoundary 時間碼（`tts.py` 用 Python API，不用 CLI）
+- [x] `npx tsc --noEmit` 通過；`npx remotion render` 可出 1080×1920 mp4
+- [x] Kinocut MCP 以 stdio 啟動、`tools/list` 回 196 個 tools
+- [x] `uv run pytest`

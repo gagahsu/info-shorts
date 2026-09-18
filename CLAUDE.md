@@ -34,7 +34,8 @@ Core 不知道來源是什麼，只認 `content.json`。新來源＝新 adapter�
 
 ## 3. 技術棧（已定案）
 
-- 執行環境：**WSL2 (Ubuntu)**。GPU 等級不高：Remotion render 走 CPU；本專案不跑 Whisper（字幕時間碼直接來自 edge-tts）。
+- 執行環境：**Windows 原生**（ADR-008；WSL 缺 sudo/node/ffmpeg）。Python 用 `uv`（`uv sync` / `uv run infoshorts …`）。GPU 等級不高：Remotion render 走 CPU；本專案不跑 Whisper（字幕時間碼直接來自 edge-tts）。
+- FFmpeg 必須 6+（Kinocut 要求）；PATH 上的 miniconda 4.x 不能用，`src/infoshorts/ffmpeg.py` 會自動選 winget 的 8.x。
 - 語言：Python 3.11+（adapter、編排、TTS）、Node.js 22+ / TypeScript（Remotion）。
 - TTS＋字幕：`edge-tts`，一次輸出 `voice.mp3` + `voice.srt`（字幕時間碼由此而來，不需要 Whisper）。
 - 渲染：Remotion，`Short` composition 吃 `props.json`；字幕層用 `@remotion/captions` 讀 srt。
@@ -64,9 +65,13 @@ info-shorts/
 │   │   ├── generic.py
 │   │   ├── briefing.py
 │   │   └── company.py
+│   ├── content.py           schema 驗證與預設值
+│   ├── format.py            數字／百分比／日期中文讀法（唯一出處）
 │   ├── scenes.py            content.json → scenes（切段、每段的旁白稿與畫面型態）
 │   ├── tts.py               edge-tts：旁白 mp3 + srt，並回填每個 scene 的起迄秒
 │   ├── props.py             scenes + 音訊時間 → Remotion props.json
+│   ├── render.py            呼叫 npx remotion render（--public-dir 指到 run 目錄）
+│   ├── ffmpeg.py            定位 ffmpeg 6+，同步給 Kinocut
 │   ├── qa.py                呼叫 Kinocut 品檢
 │   └── cli.py               `infoshorts build --adapter generic --input x.json`
 ├── remotion/
@@ -74,12 +79,15 @@ info-shorts/
 │       ├── Short.tsx        主 composition：依 props.scenes 逐段渲染
 │       ├── theme.ts         色彩／字體／間距 token（唯一風格來源）
 │       └── scenes/          Title / Stat / Bullets / Table / Quote / Disclaimer
+├── tests/                   pytest；adapter fixture 在 tests/fixtures/<adapter>/
 ├── runs/<YYYY-MM-DD>-<slug>/
 │   ├── input.*              原始輸入
 │   ├── content.json
 │   ├── scenes.json
+│   ├── seg/                 每段旁白的 mp3/wav（不進 git）
 │   ├── voice.mp3 / voice.srt
 │   ├── props.json
+│   ├── qa.json              Kinocut 品檢結果
 │   └── out/                 成品（不進 git）
 ├── .mcp.json
 └── .gitignore
@@ -88,7 +96,7 @@ info-shorts/
 ## 5. 標準工作流程
 
 ```
-infoshorts build --adapter generic --input runs/<run>/input.json
+uv run infoshorts build --adapter generic --input runs/<run>/input.json
 # 等同於依序：
 #   adapter  → content.json
 #   scenes   → scenes.json（旁白稿在這裡定稿）

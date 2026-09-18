@@ -1,0 +1,56 @@
+{
+  "video": "C:\\Users\\icema\\workspace\\info-shorts\\runs\\2026-09-18-example-generic\\out\\2026-09-18-example-generic.mp4",
+  "ok": true,
+  "checks": [
+    {
+      "name": "duration",
+      "passed": true,
+      "message": "22.57s（預期 22.53s ± 0.5）",
+      "details": {
+        "actual": 22.570667,
+        "expected": 22.533333333333335
+      }
+    },
+    {
+      "name": "resolution",
+      "passed": true,
+      "message": "1080×1920（預期 1080×1920）",
+      "details": {}
+    },
+    {
+      "name": "audio_length",
+      "passed": true,
+      "message": "音軌 22.57s vs 影片 22.57s",
+      "details": {
+        "audio": 22.570667,
+        "video": 22.570667
+      }
+    },
+    {
+      "name": "loudness",
+      "passed": true,
+      "message": "Audio loudness is good (-16.3 LUFS)",
+      "details": {
+        "lufs": -16.32,
+        "true_peak": -4.49,
+        "loudness_range": 2.2,
+        "target_lufs": -16
+      }
+    },
+    {
+      "name": "black_frames",
+      "passed": true,
+      "message": "無連續黑幀 > 0.5s",
+      "details": {
+        "runs": []
+      }
+    }
+  ],
+  "advisory": [
+    "kinocut brightness: Could not analyze brightness (no video stream or analysis failed)",
+    "kinocut contrast: Could not analyze contrast (analysis failed)",
+    "kinocut saturation: Could not analyze saturation (analysis failed)",
+    "kinocut color_balance: Could not analyze color balance (analysis failed)",
+    "kinocut temporal_motion: Could not analyze temporal motion (analysis failed)"
+  ]
+}

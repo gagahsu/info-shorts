@@ -1,0 +1,54 @@
+[
+  {
+    "idx": 0,
+    "type": "title",
+    "props": {
+      "title": "本週三件事",
+      "subtitle": "AI 影片工具速覽",
+      "date": "2026-09-20"
+    },
+    "narration": "九月二十日，本週三件事，AI 影片工具速覽。",
+    "start": 0.0,
+    "end": 5.392
+  },
+  {
+    "idx": 1,
+    "type": "stat",
+    "props": {
+      "label": "Kinocut MCP tools",
+      "value": "190+",
+      "delta": null,
+      "deltaDirection": null,
+      "unit": ""
+    },
+    "narration": "Kinocut MCP tools，超過一百九十。",
+    "start": 5.392,
+    "end": 9.464
+  },
+  {
+    "idx": 2,
+    "type": "bullets",
+    "props": {
+      "heading": "為什麼重要",
+      "items": [
+        "不用猜 ffmpeg 參數",
+        "內建品質檢查",
+        "本機免費"
+      ]
+    },
+    "narration": "為什麼重要。第一，不用猜 ffmpeg 參數；第二，內建品質檢查；第三，本機免費。",
+    "start": 9.464,
+    "end": 18.576
+  },
+  {
+    "idx": 3,
+    "type": "quote",
+    "props": {
+      "text": "先把 Kinocut 用起來，再談 Remotion。",
+      "source": null
+    },
+    "narration": "先把 Kinocut 用起來，再談 Remotion。",
+    "start": 18.576,
+    "end": 22.528
+  }
+]
