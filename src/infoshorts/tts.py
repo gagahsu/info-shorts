@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any, Protocol
 
 from infoshorts import ffmpeg
+from infoshorts import format as fmt
 
 DEFAULT_VOICE = "zh-TW-HsiaoChenNeural"
 DEFAULT_RATE = "+5%"
@@ -174,6 +175,75 @@ def make_engine(name: str, voice: str | None, rate: str) -> Engine:
     if name == "kokoro":
         return KokoroEngine(voice or KOKORO_DEFAULT_VOICE, rate)
     raise ValueError(f"未知 TTS 引擎：{name}")
+
+
+# ---------------------------------------------------------------- 顯示文字對齊
+
+
+def align_display(words: list[Word], marked: str) -> list[Word]:
+    """把 TTS 依「唸法」回傳的詞，換成字幕要「顯示」的文字（format.mark 的雙軌）。
+
+    唸法裡被替換的區段（例如「四萬七千一百六十」）視為一個整體：所有落在該區段的詞合併成一個 Word，
+    文字改成顯示形式（「47,160」）、時間取合併範圍。其他詞原樣保留。
+    """
+    segs = fmt.segments(marked)
+    if not any(sub for _, _, sub in segs):
+        return words
+    # 每個區段在「唸法全文」裡的位置
+    spans: list[tuple[int, int, str, bool]] = []  # (start, end, display, is_sub)
+    pos = 0
+    for disp, spk, sub in segs:
+        spans.append((pos, pos + len(spk), disp, sub))
+        pos += len(spk)
+    spoken_text = "".join(spk for _, spk, _ in segs)
+
+    def display_for(i: int, j: int) -> str:
+        out = []
+        for a, b, disp, sub in spans:
+            if b <= i or a >= j:
+                continue
+            out.append(disp if sub else spoken_text[max(a, i) : min(b, j)])
+        return "".join(out)
+
+    def sub_hit(i: int, j: int) -> int | None:
+        for k, (a, b, _, sub) in enumerate(spans):
+            if sub and a < j and b > i:
+                return k
+        return None
+
+    out: list[Word] = []
+    cursor = 0
+    group: list[Word] | None = None
+    group_range = [0, 0]
+    group_key: int | None = None
+
+    def flush() -> None:
+        nonlocal group
+        if group:
+            out.append(Word(display_for(*group_range), min(w.start for w in group), max(w.end for w in group)))
+            group = None
+
+    for w in words:
+        token = w.text.strip()
+        i = spoken_text.find(token, cursor) if token else -1
+        if i < 0:
+            flush()
+            out.append(w)
+            continue
+        j = i + len(token)
+        cursor = j
+        key = sub_hit(i, j)
+        if key is None:
+            flush()
+            out.append(Word(display_for(i, j), w.start, w.end))
+        elif group is not None and key == group_key:
+            group.append(w)
+            group_range[1] = j
+        else:
+            flush()
+            group, group_key, group_range = [w], key, [i, j]
+    flush()
+    return out
 
 
 # ---------------------------------------------------------------- 字幕切分
@@ -361,14 +431,16 @@ def synthesize_scenes(
     cues: list[Cue] = []
     for s in scenes:
         idx = s["idx"]
-        narration = (s.get("narration") or "").strip()
+        marked = (s.get("narration_marked") or s.get("narration") or "").strip()
+        narration = fmt.spoken(marked)
         wav = seg_dir / f"{idx:02d}.wav"
         if narration:
             mp3 = seg_dir / f"{idx:02d}.mp3"
             words = engine.synthesize(narration, mp3)
             speech = _to_padded_wav(mp3, wav, SCENE_BUFFER)
             seg_len = ffmpeg.duration(wav)
-            for c in build_cues(words, narration):
+            shown = align_display(words, marked)  # 唸「四萬七千一百六十」→ 字幕顯示「47,160」
+            for c in build_cues(shown, fmt.display(marked)):
                 cues.append(Cue(t + c.start, min(t + c.end, t + speech + SCENE_BUFFER), c.text))
             # 實際語音結束點（最後一個字的結尾；TTS 通常在段尾留約 0.7s 靜音），給 BGM ducking 用
             speech_end = max((w.end for w in words), default=speech)

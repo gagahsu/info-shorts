@@ -73,3 +73,15 @@
 - schema：stat 多 `delta_kind`（change／yoy／mom／net），旁白依此讀「上漲／年增／月增／買超」；表格則從欄名推語意（`format.kind_for_column`）。
 - 讀法規則（core）：括號內 4–6 位數字視為股票代號逐位讀（二四四九）；欄名括號內的單位補到純數值後面（營收(億) → 三十六點二二億）；同單位帶號兩欄表用壓縮讀法。
 - company adapter：skill 的圖卡 JSON 已有 `revenue_chart` 結構化數字，直接用，不需要 skill 另外輸出 `company_data.json`（原 TASKS 那一項取消）。
+
+## ADR-017 2026-09-19 預設 theme 改為米白手繪風 paper（取代 ADR-005 的預設）
+- 決策：使用者看過成品後認為深灰置位風不好看，指定參考自己 IG 圖卡的米白手繪風。新增 `themes.paper` 並設為預設；`neutral` 保留可用 `--theme neutral` 切回。
+- 為了支援卡片框、標籤膠囊、外框、頁首頁尾，theme token 擴充（cardBorder/frameBorder/tagBg/divider/showHeader/headerDecor/caption*），元件只讀 token；neutral 把這些設為 0/null 就維持原樣，符合「換 theme 不改元件」。
+- 頁首頁尾需要全片資訊 → props.json 多 `meta {title, date, brand, disclaimer}`；content.json 多 `brand`（company adapter 取 payload 的 `brand_name`）。
+
+## ADR-018 2026-09-19 旁白稿「顯示／唸法」雙軌：字幕顯示數字，語音唸中文
+- 問題：字幕直接用 TTS 的詞，數字都變成國字（二四四九、四萬七千一百六十），使用者要求字幕用數字。
+- 決策：`format.py` 的讀法函式回傳「標記文字」（顯示唸法）；`scenes.json` 存 `narration`（唸法）、`narration_display`（顯示）、`narration_marked`（原始標記）。
+  `tts.py` 用唸法合成，再把 edge-tts 回傳的詞對回標記區段：落在同一替換段的詞合併成一個詞、文字換成顯示形式（`align_display`），字幕再切分。
+- 順帶：「／」唸成「、」但顯示不變（使用者反映「主要產品斜線服務」）；標題、標籤、欄名也一律過 `readable_text`。
+- 風險：edge-tts 的詞若和唸法文字對不上（它偶爾會正規化英文），該詞就原樣輸出；實測中文與數字都對得上。

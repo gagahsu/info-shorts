@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {AbsoluteFill, Audio, Sequence, cancelRender, continueRender, delayRender, staticFile} from 'remotion';
 import {Bgm} from './Bgm';
 import {Captions} from './Captions';
+import {Footer, Frame, Header} from './Chrome';
 import {fontsReady} from './fonts';
 import {getTheme} from './theme';
 import {ThemeProvider} from './ThemeContext';
@@ -32,6 +33,23 @@ const renderScene = (s: Scene, durationInFrames: number): React.ReactNode => {
   }
 };
 
+/** 頁首小標：每個 scene 自己的標題 */
+const sceneLabel = (s: Scene): string | null => {
+  switch (s.type) {
+    case 'stat':
+      return s.props.label || null;
+    case 'bullets':
+    case 'table':
+      return s.props.heading || null;
+    case 'quote':
+      return '結語';
+    case 'disclaimer':
+      return '免責聲明';
+    default:
+      return null;
+  }
+};
+
 export const Short: React.FC<ShortProps> = (props) => {
   const theme = getTheme(props.theme);
   const [handle] = useState(() => delayRender('fonts'));
@@ -40,18 +58,22 @@ export const Short: React.FC<ShortProps> = (props) => {
       .then(() => continueRender(handle))
       .catch((e) => cancelRender(e));
   }, [handle]);
+  const total = props.scenes.length;
 
   return (
     <ThemeProvider theme={theme} kind={props.kind}>
       <AbsoluteFill style={{backgroundColor: theme.bg}}>
+        <Frame />
         {props.scenes.map((s, i) => {
           const len = Math.max(1, s.endFrame - s.startFrame);
           return (
             <Sequence key={i} from={s.startFrame} durationInFrames={len} name={`${i} ${s.type}`}>
+              {s.type !== 'title' ? <Header meta={props.meta} index={i} total={total} label={sceneLabel(s)} /> : null}
               {renderScene(s, len)}
             </Sequence>
           );
         })}
+        <Footer meta={props.meta} />
         {props.audio.voice ? <Audio src={staticFile(props.audio.voice)} /> : null}
         {props.audio.bgm ? (
           <Bgm

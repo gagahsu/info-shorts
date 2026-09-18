@@ -127,6 +127,7 @@ class CompanyAdapter:
                 "kind": "company",
                 "title": title,
                 "subtitle": cover.get("subtitle"),
+                "brand": raw.get("brand_name") or None,
                 "date": None,
                 "disclaimer": True,
                 "target_duration": 60,

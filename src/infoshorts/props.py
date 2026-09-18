@@ -60,6 +60,12 @@ def build_props(
         "durationInFrames": total_frames,
         "theme": theme,
         "kind": content.get("kind", "generic"),
+        "meta": {
+            "title": content["title"],
+            "date": content.get("date"),
+            "brand": content.get("brand"),
+            "disclaimer": bool(content.get("disclaimer")),
+        },
         "audio": {
             "voice": "voice.mp3",
             "bgm": bgm_name,

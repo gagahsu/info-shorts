@@ -27,7 +27,7 @@ Core 不知道來源是什麼，只認 `content.json`。新來源＝新 adapter�
 
 1. **AI Agent 以外一律免費開源。** TTS 用 edge-tts（主）/ Kokoro（備援），不用 ElevenLabs、Google TTS 等付費服務。
 2. **Core 與 adapter 嚴格分離。** adapter 只能產 `content.json`，不可直接呼叫 render；core 不可引用任何 adapter 的欄位名稱。
-3. **視覺風格只從 `remotion/src/theme.ts` 讀。** 目前是中性置位風格（`neutral`），之後換風格只改 theme，不動 scene 元件。
+3. **視覺風格只從 `remotion/src/theme.ts` 讀。** 預設是米白手繪風（`paper`，ADR-017），另有 `neutral`；換風格只改 theme，不動 scene 元件。
 4. **每支影片先過 Kinocut 品檢再算完成。** 時長、解析度 1080×1920、音量、無黑幀。
 5. **不自動發布。** 本專案輸出到 `out/`；上傳 IG 是既有 ig-auto-post pipeline 的事，本專案不碰 Meta API、不存 token。
 6. **不編造數據。** adapter 只轉換輸入的資料；資料缺欄位就在 `content.json` 標 `null`，畫面顯示「—」，不猜值。
@@ -116,7 +116,7 @@ Claude 在 `scenes.json` 產生後**回報旁白稿摘要**（不必等確認，
 - TypeScript：`strict: true`；動畫只用 Remotion API（`useCurrentFrame`/`interpolate`/`spring`/`<Sequence>`），禁用 CSS transition。
 - 時間單位：scenes/props 用秒（float）；Remotion 內部轉 frame（30 fps）。
 - 字幕：每段字幕 ≤ 14 個中文字、≤ 2 行；由 `tts.py` 依 srt 切，超長就重切。
-- 旁白稿：口語、短句、數字用中文讀法（`+1.25%` → 「上漲一點二五個百分點」），轉換規則寫在 `scenes.py`，不散落各 adapter。
+- 旁白稿：口語、短句、數字用中文讀法（`+1.25%` → 「上漲一點二五個百分點」），轉換規則寫在 `format.py`，不散落各 adapter。字幕顯示數字、語音唸中文（`format.mark` 雙軌，ADR-018）。
 - Commit：`feat|fix|docs|chore(scope): 說明`。
 - 新依賴先寫 ADR。
 

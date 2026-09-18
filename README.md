@@ -13,7 +13,7 @@ uv run infoshorts build --adapter generic --input examples/generic.json
 # 產物：runs/<今天>-generic/{content,scenes,props}.json、voice.mp3、voice.srt、out/<run>.mp4、qa.json
 ```
 
-常用選項：`--dry-run`（只到 scenes.json，看旁白稿）、`--run <名稱>`、`--voice zh-TW-YunJheNeural`、`--rate +5%`、`--bgm x.mp3`（自動 ducking）、`--engine kokoro`（離線備援，先 `uv sync --group kokoro`）。
+常用選項：`--dry-run`（只到 scenes.json，看旁白稿）、`--run <名稱>`、`--voice zh-TW-YunJheNeural`、`--rate +5%`、`--bgm x.mp3`（自動 ducking）、`--engine kokoro`（離線備援，先 `uv sync --group kokoro`）、`--theme neutral`（深灰置位風；預設 `paper` 米白手繪風）。
 更多範例：`examples/text-only.json`、`examples/long-bullets.json`、`examples/multi-stat.json`（含 table 與免責聲明）。
 真實來源：`--adapter briefing|company|closing --input <payload.json>`（樣本在 `tests/fixtures/<adapter>/input.json`）。
 只跑品檢：`uv run infoshorts qa runs/<run>/out/<run>.mp4`。預覽畫面：`cd remotion && npx remotion studio`。

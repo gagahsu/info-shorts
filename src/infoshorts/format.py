@@ -20,6 +20,50 @@ BIG_UNITS = ["", "萬", "億", "兆"]
 _PERCENT_RE = re.compile(r"([+-]?)(\d[\d,]*(?:\.\d+)?)\s*%")
 _SIGNED_RE = re.compile(r"(?<![\w.])([+-])(\d[\d,]*(?:\.\d+)?)(?!\s*%)")
 _PLAIN_NUM_RE = re.compile(r"[+-]?\d[\d,]*(?:\.\d+)?")
+_SLASH_RE = re.compile(r"(?<!\d)\s*[／/]\s*(?!\d)")
+
+# ---------------------------------------------------------------- 顯示／唸法雙軌
+# 旁白稿裡的數字要「唸」中文（四萬七千一百六十）但字幕要「顯示」數字（47,160）。
+# 讀法函式回傳的是「標記文字」：顯示唸法；TTS 前用 spoken() 取唸法，字幕用 display() 取顯示。
+M_START, M_SEP, M_END = "", "", ""
+_MARK_RE = re.compile(f"{M_START}(.*?){M_SEP}(.*?){M_END}", re.DOTALL)
+
+
+def mark(display_text: str, spoken_text: str) -> str:
+    """把「顯示文字」與「唸法」綁在一起；兩者相同就不加標記。"""
+    if display_text == spoken_text:
+        return spoken_text
+    return f"{M_START}{display_text}{M_SEP}{spoken_text}{M_END}"
+
+
+def spoken(text: str | None) -> str:
+    """標記文字 → 給 TTS 唸的純文字（None → ''）。"""
+    return _MARK_RE.sub(lambda m: m.group(2), text or "")
+
+
+def display(text: str | None) -> str:
+    """標記文字 → 給字幕顯示的純文字（None → ''）。"""
+    return _MARK_RE.sub(lambda m: m.group(1), text or "")
+
+
+def segments(text: str) -> list[tuple[str, str, bool]]:
+    """標記文字 → [(顯示, 唸法, 是否為替換段)]，依序串接即原文。"""
+    out: list[tuple[str, str, bool]] = []
+    pos = 0
+    for m in _MARK_RE.finditer(text):
+        if m.start() > pos:
+            plain = text[pos : m.start()]
+            out.append((plain, plain, False))
+        out.append((m.group(1), m.group(2), True))
+        pos = m.end()
+    if pos < len(text):
+        out.append((text[pos:], text[pos:], False))
+    return out
+
+
+def num(raw: str, places: int = 2) -> str:
+    """數字的標記讀法：'47,160' → 顯示 47,160、唸 四萬七千一百六十。"""
+    return mark(raw, decimal_to_zh(raw, places))
 
 
 def _section_to_zh(n: int) -> str:
@@ -93,10 +137,10 @@ def percent_to_zh(text: str) -> str:
     m = _PERCENT_RE.fullmatch(text.strip())
     if not m:
         return text
-    sign, num = m.group(1), m.group(2)
-    if Decimal(num.replace(",", "")) == 0:
+    sign, n = m.group(1), m.group(2)
+    if Decimal(n.replace(",", "")) == 0:
         return "持平"
-    body = decimal_to_zh(num) + "個百分點"
+    body = mark(f"{n}%", decimal_to_zh(n) + "個百分點")
     return {"+": "上漲", "-": "下跌"}.get(sign, "") + body
 
 
@@ -140,12 +184,15 @@ def signed_to_zh(text: Any, kind: str = "change", unit: str = "") -> str | None:
     parsed = parse_signed(text)
     if parsed is None:
         return None
-    sign, num, suffix = parsed
-    if Decimal(num.replace(",", "")) == 0:
+    sign, n, suffix = parsed
+    if Decimal(n.replace(",", "")) == 0:
         return "持平"
     up, down, _, _ = KIND_WORDS.get(kind, KIND_WORDS["change"])
-    tail = "個百分點" if suffix == "%" else (suffix or unit)
-    return {"+": up, "-": down}.get(sign, "") + decimal_to_zh(num) + tail
+    if suffix == "%":
+        body = mark(f"{n}%", decimal_to_zh(n) + "個百分點")
+    else:
+        body = num(n) + (suffix or unit)
+    return {"+": up, "-": down}.get(sign, "") + body
 
 
 def delta_to_zh(delta: Any, unit: str = "", kind: str = "change") -> str | None:
@@ -165,7 +212,10 @@ def value_to_zh(value: Any, unit: str = "") -> str:
     more = s.endswith("+")
     core = s.rstrip("+")
     if _PLAIN_NUM_RE.fullmatch(core):
-        text = ("百分之" + decimal_to_zh(core)) if unit in ("%", "％") else decimal_to_zh(core) + unit
+        if unit in ("%", "％"):
+            text = mark(f"{core}%", "百分之" + decimal_to_zh(core))
+        else:
+            text = num(core) + unit
         return "超過" + text if more else text
     return s + unit
 
@@ -177,32 +227,37 @@ def pct_change_to_zh(pct: Any, kind: str = "change") -> str | None:
     parsed = parse_signed(pct)
     if parsed is None:
         return str(pct).strip()
-    sign, num, _ = parsed
-    if Decimal(num.replace(",", "")) == 0:
+    sign, n, _ = parsed
+    if Decimal(n.replace(",", "")) == 0:
         return "持平"
     _, _, up, down = KIND_WORDS.get(kind, KIND_WORDS["change"])
-    return {"+": up, "-": down}.get(sign, "幅度") + decimal_to_zh(num) + "個百分點"
+    return {"+": up, "-": down}.get(sign, "幅度") + mark(f"{n}%", decimal_to_zh(n) + "個百分點")
 
 
 def ticker_to_zh(text: str) -> str:
-    """括號內的股票代號逐位讀：京元電子（2449）→ 京元電子（二四四九）。"""
-    return _TICKER_RE.sub(lambda m: m.group(1) + "".join(DIGITS[int(ch)] for ch in m.group(2)) + m.group(3), text)
+    """括號內的股票代號逐位讀：京元電子（2449）→ 唸「二四四九」、顯示 2449。"""
+    return _TICKER_RE.sub(
+        lambda m: m.group(1) + mark(m.group(2), "".join(DIGITS[int(ch)] for ch in m.group(2))) + m.group(3), text
+    )
 
 
 def date_to_zh(iso: str | None) -> str | None:
-    """'2026-09-20' → 九月二十日（不讀年）。格式不對就原樣回傳。"""
+    """'2026-09-20' → 唸「九月二十日」、顯示 9月20日（不讀年）。格式不對就原樣回傳。"""
     if not iso:
         return None
     m = re.fullmatch(r"(\d{4})-(\d{1,2})-(\d{1,2})", iso.strip())
     if not m:
         return iso
     month, day = int(m.group(2)), int(m.group(3))
-    return f"{int_to_zh(month)}月{int_to_zh(day)}日"
+    return mark(f"{month}月{day}日", f"{int_to_zh(month)}月{int_to_zh(day)}日")
 
 
 def readable_text(text: str) -> str:
-    """自由文字中的百分比與帶正負號數字轉中文讀法；純數字交給 TTS 自行處理。"""
+    """自由文字：股票代號逐位讀、百分比與帶號數字轉中文讀法、「／」唸成「、」；純數字交給 TTS。"""
+    if M_START in text:  # 已經是標記文字（例如使用者提供的旁白經過一次處理）就不再處理
+        return text
     text = ticker_to_zh(text)
     text = _PERCENT_RE.sub(lambda m: percent_to_zh(m.group(0)), text)
     text = _SIGNED_RE.sub(lambda m: delta_to_zh(m.group(0)) or m.group(0), text)
+    text = _SLASH_RE.sub(lambda m: mark(m.group(0), "、"), text)
     return text

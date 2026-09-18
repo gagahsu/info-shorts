@@ -29,6 +29,13 @@
         "null"
       ]
     },
+    "brand": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "頁尾品牌字（例如「個人盤後筆記」），paper theme 顯示「品牌 ｜ 非投資建議」"
+    },
     "date": {
       "type": [
         "string",

@@ -27,6 +27,14 @@ export type Scene =
   | {type: 'quote'; startFrame: number; endFrame: number; props: QuoteProps}
   | {type: 'disclaimer'; startFrame: number; endFrame: number; props: DisclaimerProps};
 
+/** 全片共用的資訊（paper theme 的頁首／頁尾用） */
+export type Meta = {
+  title: string;
+  date: string | null;
+  brand: string | null;
+  disclaimer: boolean;
+};
+
 export type ShortProps = {
   fps: number;
   width: number;
@@ -34,6 +42,7 @@ export type ShortProps = {
   durationInFrames: number;
   theme: string;
   kind: ContentKind;
+  meta: Meta;
   audio: {
     voice: string | null;
     bgm: string | null;

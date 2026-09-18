@@ -6,8 +6,9 @@ export const sampleProps: ShortProps = {
   width: 1080,
   height: 1920,
   durationInFrames: 30 * 16,
-  theme: 'neutral',
-  kind: 'generic',
+  theme: 'paper',
+  kind: 'closing',
+  meta: {title: '台股盤後速報', date: '2026-09-18', brand: '個人盤後筆記', disclaimer: true},
   audio: {voice: null, bgm: null, bgmVolume: 0.25, duckVolume: 0.08, voiceRanges: []},
   captions: null,
   scenes: [

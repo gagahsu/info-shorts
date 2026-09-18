@@ -36,6 +36,7 @@
   "target_duration": 45,
   "disclaimer": false,
   "id": "2026-09-20-test",
+  "brand": null,
   "bgm": null,
   "kind": "generic"
 }

@@ -32,7 +32,7 @@
       "message": "Audio loudness is good (-16.4 LUFS)",
       "details": {
         "lufs": -16.42,
-        "true_peak": -4.37,
+        "true_peak": -4.32,
         "loudness_range": 2.7,
         "target_lufs": -16
       }
@@ -47,8 +47,8 @@
     }
   ],
   "advisory": [
-    "kinocut brightness: Video is quite dark (brightness: 21.7). Consider slight brightness increase.",
-    "kinocut contrast: Video has low contrast (std dev: 1.8). Image may appear flat. Consider increasing contrast.",
-    "kinocut saturation: Video appears desaturated (estimated: 1.2%). Consider increasing saturation."
+    "kinocut brightness: Video has blown highlights (brightness: 235.0). Consider lowering exposure.",
+    "kinocut contrast: Video has low contrast (std dev: 5.0). Image may appear flat. Consider increasing contrast.",
+    "kinocut saturation: Video appears desaturated (estimated: 2.3%). Consider increasing saturation."
   ]
 }

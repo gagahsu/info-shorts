@@ -28,6 +28,7 @@ def apply_defaults(content: dict[str, Any], *, run_id: str | None = None) -> dic
             c[key] = spec["default"]
     c.setdefault("id", run_id or f"{date.today():%Y-%m-%d}-untitled")
     c.setdefault("subtitle", None)
+    c.setdefault("brand", None)
     if not c.get("date"):
         c["date"] = date.today().isoformat()
     c.setdefault("bgm", None)

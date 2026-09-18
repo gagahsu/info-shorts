@@ -2,8 +2,11 @@ import React from 'react';
 import {AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig} from 'remotion';
 import {useTheme} from '../ThemeContext';
 
+/** 頁首佔用的高度（paper theme showHeader 時，內容區從這裡開始） */
+export const HEADER_HEIGHT = 210;
+
 /**
- * 每個 scene 的共用外框：內容區 = safeTop 到字幕條上方；進場 spring 0.4s（上移+淡入），退場淡出 0.25s。
+ * 每個 scene 的共用外框：內容區 = safeTop（或頁首下方）到字幕條上方；進場 spring 0.4s（上移+淡入），退場淡出 0.25s。
  * 動畫只用 Remotion API（useCurrentFrame / interpolate / spring），不用 CSS transition。
  */
 export const SceneFrame: React.FC<React.PropsWithChildren<{durationInFrames: number; align?: 'center' | 'top'}>> = ({
@@ -22,13 +25,14 @@ export const SceneFrame: React.FC<React.PropsWithChildren<{durationInFrames: num
   });
   const opacity = Math.min(enter, exit);
   const translateY = interpolate(enter, [0, 1], [40, 0]);
+  const top = theme.showHeader ? theme.frameInset + HEADER_HEIGHT + 40 : theme.safeTop;
 
   return (
     <AbsoluteFill
       style={{
         paddingLeft: theme.pad,
         paddingRight: theme.pad,
-        paddingTop: theme.safeTop,
+        paddingTop: top,
         paddingBottom: 1920 - theme.captionY + 40,
         display: 'flex',
         flexDirection: 'column',

@@ -112,3 +112,25 @@ def test_join_digits_hug_cjk() -> None:
         ]
     )
     assert build_cues(words)[0].text == "2026年6月營收40.8億"
+
+
+def test_align_display_merges_number_words() -> None:
+    from infoshorts import format as fmt
+    from infoshorts.tts import align_display
+
+    marked = "台指期夜盤，" + fmt.value_to_zh("47,160", "點") + "，" + (fmt.delta_to_zh("+701", "點") or "") + "。"
+    assert fmt.spoken(marked) == "台指期夜盤，四萬七千一百六十點，上漲七百零一點。"
+    # edge-tts 會把數字拆成好幾個詞
+    words = _seq(["台指期", "夜盤", "四萬", "七千", "一百六十", "點", "上漲", "七百", "零一", "點"], step=0.3)
+    shown = align_display(words, marked)
+    assert [w.text for w in shown] == ["台指期", "夜盤", "47,160", "點", "上漲", "701", "點"]
+    assert shown[2].start == words[2].start and shown[2].end == words[4].end
+    cues = build_cues(shown, fmt.display(marked))
+    assert [c.text for c in cues] == ["台指期夜盤", "47,160點", "上漲701點"]
+
+
+def test_align_display_passthrough_without_marks() -> None:
+    from infoshorts.tts import align_display
+
+    words = _seq(["你好", "世界"])
+    assert align_display(words, "你好世界") == words

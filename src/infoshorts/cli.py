@@ -57,7 +57,9 @@ def build(
     rate: Annotated[str, typer.Option("--rate", help="語速，例如 +5%")] = tts.DEFAULT_RATE,
     engine: Annotated[str, typer.Option("--engine", help="edge | kokoro")] = "edge",
     bgm: Annotated[Path | None, typer.Option("--bgm", exists=True, dir_okay=False, help="背景音樂（可選）")] = None,
-    theme: Annotated[str, typer.Option("--theme", help="remotion/src/theme.ts 裡的 theme 名")] = "neutral",
+    theme: Annotated[
+        str, typer.Option("--theme", help="remotion/src/theme.ts 裡的 theme 名：paper（預設）| neutral")
+    ] = "paper",
     concurrency: Annotated[int, typer.Option("--concurrency", help="Remotion render 並行數")] = 2,
     dry_run: Annotated[bool, typer.Option("--dry-run", help="只跑到 scenes.json，檢查旁白稿")] = False,
 ) -> None:

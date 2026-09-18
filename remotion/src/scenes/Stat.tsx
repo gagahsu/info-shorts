@@ -3,6 +3,7 @@ import {Easing, interpolate, useCurrentFrame} from 'remotion';
 import {deltaColor} from '../theme';
 import {useTheme} from '../ThemeContext';
 import type {StatProps} from '../types';
+import {Card, Tag} from './Card';
 import {SceneFrame} from './SceneFrame';
 
 const COUNT_FRAMES = 24; // counting-up 0.8s @ 30fps
@@ -64,26 +65,28 @@ export const Stat: React.FC<StatProps & {durationInFrames: number}> = ({
       .join(' ') + (KIND_SUFFIX[deltaKind ?? 'change'] ?? '');
   return (
     <SceneFrame durationInFrames={durationInFrames}>
-      <div style={{fontSize: theme.sizeBody, color: theme.muted}}>{label}</div>
-      <div
-        style={{
-          fontFamily: theme.fontMono,
-          fontSize: theme.sizeNumber,
-          fontWeight: 700,
-          lineHeight: 1.1,
-          marginTop: 24,
-          wordBreak: 'break-all',
-          fontVariantNumeric: 'tabular-nums',
-        }}
-      >
-        <CountUp raw={value} />
-        {value !== null && unit ? <span style={{fontSize: theme.sizeBody, marginLeft: 12, color: theme.muted}}>{unit}</span> : null}
-      </div>
-      {hasDelta ? (
-        <div style={{fontFamily: theme.fontMono, fontSize: theme.sizeBody, color, marginTop: 24}}>
-          {arrow} {deltaText}
+      <Card>
+        <Tag>{label}</Tag>
+        <div
+          style={{
+            fontFamily: theme.fontMono,
+            fontSize: theme.sizeNumber,
+            fontWeight: 700,
+            lineHeight: 1.1,
+            marginTop: 24,
+            wordBreak: 'break-all',
+            fontVariantNumeric: 'tabular-nums',
+          }}
+        >
+          <CountUp raw={value} />
+          {value !== null && unit ? <span style={{fontSize: theme.sizeBody, marginLeft: 12, color: theme.muted}}>{unit}</span> : null}
         </div>
-      ) : null}
+        {hasDelta ? (
+          <div style={{fontFamily: theme.fontMono, fontSize: theme.sizeBody, fontWeight: 700, color, marginTop: 24}}>
+            {arrow} {deltaText}
+          </div>
+        ) : null}
+      </Card>
     </SceneFrame>
   );
 };

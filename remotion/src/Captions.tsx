@@ -43,7 +43,8 @@ export const Captions: React.FC<{file: string}> = ({file}) => {
       <div
         style={{
           background: theme.captionBg,
-          color: theme.text,
+          color: theme.captionText,
+          border: theme.captionBorder ? `${theme.captionBorder}px solid ${theme.cardBorderColor}` : 'none',
           fontFamily: theme.fontDisplay,
           fontSize: theme.captionSize,
           fontWeight: 700,

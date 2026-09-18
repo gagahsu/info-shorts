@@ -20,19 +20,32 @@ ORDINALS = ["第一", "第二", "第三", "第四", "第五"]
 
 
 def _scene(idx: int, type_: str, props: dict[str, Any], narration: str | None) -> dict[str, Any]:
-    return {"idx": idx, "type": type_, "props": props, "narration": narration, "start": None, "end": None}
+    """narration 是標記文字（顯示／唸法雙軌，見 format.mark）：
+    `narration`＝給 TTS 唸的、`narration_display`＝字幕顯示用、`narration_marked`＝原始標記（tts.py 對齊用）。"""
+    return {
+        "idx": idx,
+        "type": type_,
+        "props": props,
+        "narration": fmt.spoken(narration) if narration else None,
+        "narration_display": fmt.display(narration) if narration else None,
+        "narration_marked": narration,
+        "start": None,
+        "end": None,
+    }
 
 
 def _title_narration(c: dict[str, Any]) -> str:
-    parts = [p for p in (fmt.date_to_zh(c.get("date")), c["title"], c.get("subtitle")) if p]
-    return fmt.ticker_to_zh("，".join(parts)) + "。"
+    title = fmt.readable_text(c["title"])
+    subtitle = fmt.readable_text(c["subtitle"]) if c.get("subtitle") else None
+    parts = [p for p in (fmt.date_to_zh(c.get("date")), title, subtitle) if p]
+    return "，".join(parts) + "。"
 
 
 def _stat_narration(s: dict[str, Any]) -> str:
     unit = s.get("unit") or ""
     label = s.get("label", "")
     kind = s.get("delta_kind") or "change"
-    text = f"{fmt.ticker_to_zh(label)}，{fmt.value_to_zh(s.get('value'), unit)}"
+    text = f"{fmt.readable_text(label)}，{fmt.value_to_zh(s.get('value'), unit)}"
     delta = fmt.delta_to_zh(s.get("delta"), unit, kind)
     if delta:
         text += f"，{delta}"
@@ -44,7 +57,7 @@ def _stat_narration(s: dict[str, Any]) -> str:
 
 def _bullets_narration(heading: str, items: list[str]) -> str:
     body = "；".join(f"{ORDINALS[i]}，{fmt.readable_text(item)}" for i, item in enumerate(items))
-    return f"{heading}。{body}。" if heading else body + "。"
+    return f"{fmt.readable_text(heading)}。{body}。" if heading else body + "。"
 
 
 def _signed_table_narration(heading: str, rows: list[list[Any]], kind: str) -> str | None:
@@ -72,15 +85,16 @@ def _signed_table_narration(heading: str, rows: list[list[Any]], kind: str) -> s
     if not signs or len(suffixes) != 1:
         return None
     suffix = suffixes.pop()
-    tail = "個百分點" if suffix == "%" else suffix
+    tail = fmt.mark("%", "個百分點") if suffix == "%" else suffix
     up, down, _, _ = fmt.KIND_WORDS.get(kind, fmt.KIND_WORDS["change"])
     word = {"+": up, "-": down}
+    heading = fmt.readable_text(heading)
     if len(signs) == 1:
         sign = signs.pop()
-        items = [f"{n}{fmt.decimal_to_zh(num)}" if num else f"{n}無資料" for n, _, num in parsed]
+        items = [f"{n}{fmt.num(num)}" if num else f"{n}無資料" for n, _, num in parsed]
         head = f"{heading}全數{word[sign]}，" if heading else f"全數{word[sign]}，"
         return head + "、".join(items) + tail + "。"
-    items = [f"{n}{word[sg]}{fmt.decimal_to_zh(num)}" if (num and sg) else f"{n}無資料" for n, sg, num in parsed]
+    items = [f"{n}{word[sg]}{fmt.num(num)}" if (num and sg) else f"{n}無資料" for n, sg, num in parsed]
     return (f"{heading}。" if heading else "") + "、".join(items) + tail + "。"
 
 
@@ -122,7 +136,7 @@ def _table_narration(s: dict[str, Any]) -> str:
             lines.append(f"{first}，{'，'.join(parts)}")
         else:
             lines.append("，".join(fmt.value_to_zh(v) for v in row))
-    head = s.get("heading") or ""
+    head = fmt.readable_text(s.get("heading") or "")
     return (head + "。" if head else "") + "；".join(lines) + "。"
 
 

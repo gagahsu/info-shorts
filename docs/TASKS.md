@@ -57,7 +57,7 @@
 - [ ] 多聲音／多語言（zh-CN、en）
 - [ ] 圖表 scene（折線／長條，Remotion 內畫 SVG）
 - [ ] 從 `ali-abassi/remotion-templates` 挑 kinetic text 模板增加變化
-- [ ] 第二個 theme（例如沿用 ig-company-intro-card 米白手繪風）
+- [x] 第二個 theme：米白手繪風 `paper`，2026-09-19 起為預設（ADR-017）
 
 ## Log
 - 2026-09-18：專案文件初版（尚未開始 Phase 0）
@@ -68,3 +68,5 @@
 - 2026-09-19：Phase 2 完成。三支 generic 範例（30s / 34s / 51s）全部過 QA；multi-stat 帶 BGM 驗證 ducking；Kokoro 中文備援可用（CPU 約 0.6× 即時，首次下載模型 330 MB）。
   修過的坑：(1) Kinocut `movie=` 路徑在 Windows 需加引號 → monkeypatch；(2) 表格欄名「漲跌%」被讀成「漲跌百分比」→ 旁白去掉單位標記；
   (3) edge-tts 段尾約 0.7s 靜音會讓 ducking 區間過長 → 用最後一個字的結束時間（`scenes[].speech_end`）。
+- 2026-09-19：使用者看完成品的三點回饋全部處理：(1) 新 theme `paper`（米白手繪風，預設；ADR-017）；(2) 「／」唸「、」；
+  (3) 字幕顯示數字、語音唸中文（顯示／唸法雙軌，ADR-018）。
