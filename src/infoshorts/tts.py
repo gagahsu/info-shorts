@@ -185,10 +185,12 @@ def _width(text: str) -> float:
 
 
 def _join(a: str, b: str) -> str:
-    """中文相接不加空白；含英數的詞之間加空白。"""
+    """中文相接不加空白；英文詞旁邊加空白（Kinocut 這個 MCP）；數字貼著中文不加（2026年6月、701點）。"""
     if not a:
         return b
-    if re.search(r"[A-Za-z0-9]$", a) or re.match(r"^[A-Za-z0-9]", b):
+    if re.search(r"[A-Za-z]$", a) or re.match(r"^[A-Za-z]", b):
+        return a + " " + b
+    if re.search(r"[0-9]$", a) and re.match(r"^[0-9]", b):
         return a + " " + b
     return a + b
 

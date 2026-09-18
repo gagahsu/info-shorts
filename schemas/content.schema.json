@@ -16,7 +16,8 @@
       "enum": [
         "generic",
         "briefing",
-        "company"
+        "company",
+        "closing"
       ]
     },
     "title": {
@@ -106,6 +107,16 @@
               "null"
             ],
             "description": "漲跌幅（%），與 delta 並存時畫面顯示「delta（delta_pct）」"
+          },
+          "delta_kind": {
+            "enum": [
+              "change",
+              "yoy",
+              "mom",
+              "net"
+            ],
+            "default": "change",
+            "description": "漲跌的語意：change 上漲/下跌（漲幅/跌幅）、yoy 年增/年減、mom 月增/月減、net 買超/賣超"
           },
           "delta_direction": {
             "enum": [

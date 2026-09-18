@@ -98,3 +98,17 @@ def test_rate_to_speed() -> None:
     assert _rate_to_speed("+5%") == 1.05
     assert _rate_to_speed("-10%") == 0.9
     assert _rate_to_speed("weird") == 1.0
+
+
+def test_join_digits_hug_cjk() -> None:
+    words = _words(
+        [
+            ("2026年", 0.0, 0.3),
+            ("6", 0.35, 0.5),
+            ("月", 0.55, 0.7),
+            ("營收", 0.75, 1.0),
+            ("40.8", 1.05, 1.3),
+            ("億", 1.35, 1.5),
+        ]
+    )
+    assert build_cues(words)[0].text == "2026年6月營收40.8億"

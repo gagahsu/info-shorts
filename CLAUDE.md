@@ -17,8 +17,9 @@ adapter（來源專屬）  →  content.json（統一格式）  →  core pipeli
 | adapter | 來源 | 狀態 |
 |---|---|---|
 | `generic` | 任何文字／JSON | Phase 1 先做 |
-| `briefing` | 台股盤前速報（既有 gagahsu/ig-auto-post 的 `IG_BRIEFING_PAYLOAD` JSON） | Phase 3 |
-| `company` | 公司介紹圖卡 skill 產出的資料（月營收、獲利能力） | Phase 3 |
+| `briefing` | 台股盤前速報（既有 gagahsu/ig-auto-post 的 `IG_BRIEFING_PAYLOAD` JSON） | Phase 3 ✓ |
+| `company` | 公司介紹圖卡 skill 的 `slides[]` JSON（月營收、產品、競爭對手、展望） | Phase 3 ✓ |
+| `closing` | 台股盤後速報（ig-auto-post 的 `CLOSING_PAYLOAD` JSON） | 2026-09-19 追加 ✓ |
 
 Core 不知道來源是什麼，只認 `content.json`。新來源＝新 adapter，不改 core。
 
@@ -64,7 +65,8 @@ info-shorts/
 │   │   ├── base.py          Adapter 介面：`to_content(raw) -> Content`
 │   │   ├── generic.py
 │   │   ├── briefing.py
-│   │   └── company.py
+│   │   ├── company.py
+│   │   └── closing.py
 │   ├── content.py           schema 驗證與預設值
 │   ├── format.py            數字／百分比／日期中文讀法（唯一出處）
 │   ├── scenes.py            content.json → scenes（切段、每段的旁白稿與畫面型態）

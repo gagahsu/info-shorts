@@ -2,7 +2,7 @@
 
 > Claude：開工前讀「當前階段」。完成一項就勾掉並在 Log 加一行。不跳階段。
 
-## 當前階段：Phase 3（briefing 完成，company 待做）
+## 當前階段：Phase 3 完成 → Phase 4 評估
 
 ---
 
@@ -39,11 +39,12 @@
 ## Phase 3 — 兩個 adapter
 - [x] `IG_BRIEFING_PAYLOAD` 實際 schema（使用者提供 2026-09-18 樣本）寫進 ADAPTERS.md
 - [x] `adapters/briefing.py` + 真實 payload fixture（`tests/fixtures/briefing/`，公開行情資料無需去識別化）
-- [ ] 讓 ig-company-intro-card skill 多輸出 `company_data.json`（不動它的圖卡）
-- [ ] `adapters/company.py` + fixture
+- [x] ~~讓 ig-company-intro-card skill 多輸出 `company_data.json`~~ 不需要：skill 的 `slides[]` JSON 已含結構化 `revenue_chart`（ADR-016）
+- [x] `adapters/company.py` + fixture（`tests/fixtures/company/`，京元電子 2449）
+- [x] 追加 `adapters/closing.py`（`CLOSING_PAYLOAD` 盤後速報）+ fixture
 - [x] briefing 真實資料出片（`runs/2026-09-18-briefing`）；旁白讀法已檢視（四萬七千一百六十點／漲幅一點五一個百分點／百分之十三點一八）
-- [ ] company 真實資料出片，人工檢視旁白讀法
-- **驗收**：`--adapter briefing` 與 `--adapter company` 各能一鍵出片並過 QA
+- [x] company／closing 真實資料出片（`runs/2026-09-19-company`、`runs/2026-09-19-closing`），旁白讀法已檢視
+- **驗收**：`--adapter briefing` / `company` / `closing` 各能一鍵出片並過 QA ✓
 
 ## Phase 4 — 自動化（評估後才做）
 - [ ] 評估：GitHub Actions（與 ig-auto-post 同平台）能否跑 Remotion render（時間、Chrome deps、免費額度）

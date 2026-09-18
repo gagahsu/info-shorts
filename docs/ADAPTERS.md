@@ -38,16 +38,39 @@ class Adapter(Protocol):
 
 ## company（Phase 3）— 公司介紹圖卡
 
-- 輸入：ig-company-intro-card skill 在產圖前的中間資料（公司基本資料、月營收、歷年獲利能力）。若 skill 目前沒有輸出中間 JSON，Phase 3 第一項工作是讓 skill 多輸出一份 `company_data.json`（不改它的圖卡輸出）。
-- 對應：
-  | 資料 | scene type |
+- 輸入：ig-company-intro-card skill 的圖卡 payload（`slides[]`），實際樣本 `tests/fixtures/company/input.json`（京元電子 2449，2026-09-19 取得）。
+  skill 已經輸出這份 JSON，不需要另外加 `company_data.json`。
+
+  | 欄位 | 用途 |
   |---|---|
-  | 公司名稱、代碼、產業 | title |
-  | 最新月營收 + YoY | stat |
-  | 近 4 季 EPS / 毛利率 | table |
-  | 三句話介紹 | bullets |
-- `disclaimer: true` 固定。
-- 風格與該 skill 的米白手繪風無關，用本專案 `neutral` theme。
+  | `ticker` `"2449 京元電子"` | → title「京元電子（2449）」（旁白代號逐位讀：二四四九） |
+  | `slides[type=cover]` `{title, subtitle, industry}` | subtitle → `subtitle`；industry → 片頭 quote「產業：…」 |
+  | `slides[type=bullets].items[]` | bullets「主要產品／服務」，只取冒號前的名稱、去括號英文 |
+  | `slides[type=financial].revenue_chart{months,revenue,yoy}` | stat：最新月營收（億元，`delta_kind: yoy`）＋ table：近 3 個月（月份／營收(億)／年增率） |
+  | `slides[type=competitors].competitors[].name` | bullets「主要競爭對手」（含代號，逐位讀） |
+  | `slides[type=sections].sections[].title` | bullets「未來展望」（只取小標） |
+  | `intro.paragraphs`、`financial.stats/items`、`competitors[].note`、`sections[].items`、`cta`、`brand_*`、`src_note`、`caption` | 不用（太長或與影片無關） |
+
+- `disclaimer: true`、`target_duration: 60`、`date` 用出片日。月營收表同一年只在第一列唸年份（2026年6月、7月、8月）。
+- 沒有任何可用 slide → adapter 丟 `ValueError`，不出片。
+- 實測長度：京元電子樣本 76 秒（title 9s、產業 5s、產品 10s、營收 stat 7s、營收表 19s、競爭對手 13s、展望 9s、免責 4.5s）。要壓到 60 秒可把 `REVENUE_ROWS` 改 2、或拿掉產業 quote。
+
+## closing — 台股盤後速報（2026-09-19 追加，ADR-016）
+
+- 輸入：ig-auto-post 的 `CLOSING_PAYLOAD` JSON，實際樣本 `tests/fixtures/closing/input.json`。
+
+  | 欄位 | 用途 |
+  |---|---|
+  | `date` | → `date` |
+  | `taiex_close/change/change_pct` | stat：加權指數（點；delta + delta_pct） |
+  | `otc_close/change/change_pct` | stat：櫃買指數 |
+  | `institutional[{name, value:"+869.94億"}]` | table：三大法人買賣超（欄名含「買賣超」→ 旁白讀「買超／賣超」，壓縮讀法「全數買超，外資…、合計…億」） |
+  | `breadth{up, down, limit_up, limit_down}` | table：漲跌家數（上漲家數／下跌家數／漲停／跌停） |
+  | `leading_groups` / `weak_groups`（HTML） | bullets：領漲族群／弱勢族群，只取【】內名稱（各前 4 個） |
+  | `taiex_volume`、`otc_volume`、`margin_*`、`notes`、`caption` | 不用（時間預算） |
+
+- `disclaimer: true`、`target_duration: 60`。
+- 實測長度：2026-09-18 樣本 67 秒（加權 9s、櫃買 8s、法人表 12s、家數表 11s、領漲 9s、弱勢 9s、免責 4.5s）。
 
 ## 新增 adapter 的步驟
 

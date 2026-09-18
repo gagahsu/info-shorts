@@ -17,7 +17,6 @@ MAX_BULLETS_PER_SCENE = 5
 DISCLAIMER_TEXT = "以上內容僅供參考，不構成任何投資建議。投資有風險，請自行審慎評估。"
 DISCLAIMER_NARRATION = "以上內容僅供參考，不構成投資建議。"
 ORDINALS = ["第一", "第二", "第三", "第四", "第五"]
-_DIRECTION_WORDS = ("上漲", "下跌", "持平")
 
 
 def _scene(idx: int, type_: str, props: dict[str, Any], narration: str | None) -> dict[str, Any]:
@@ -26,17 +25,18 @@ def _scene(idx: int, type_: str, props: dict[str, Any], narration: str | None) -
 
 def _title_narration(c: dict[str, Any]) -> str:
     parts = [p for p in (fmt.date_to_zh(c.get("date")), c["title"], c.get("subtitle")) if p]
-    return "，".join(parts) + "。"
+    return fmt.ticker_to_zh("，".join(parts)) + "。"
 
 
 def _stat_narration(s: dict[str, Any]) -> str:
     unit = s.get("unit") or ""
     label = s.get("label", "")
-    text = f"{label}，{fmt.value_to_zh(s.get('value'), unit)}"
-    delta = fmt.delta_to_zh(s.get("delta"), unit)
+    kind = s.get("delta_kind") or "change"
+    text = f"{fmt.ticker_to_zh(label)}，{fmt.value_to_zh(s.get('value'), unit)}"
+    delta = fmt.delta_to_zh(s.get("delta"), unit, kind)
     if delta:
         text += f"，{delta}"
-    pct = fmt.pct_change_to_zh(s.get("delta_pct"))
+    pct = fmt.pct_change_to_zh(s.get("delta_pct"), kind)
     if pct:
         text += f"，{pct}"
     return text + "。"
@@ -47,16 +47,15 @@ def _bullets_narration(heading: str, items: list[str]) -> str:
     return f"{heading}。{body}。" if heading else body + "。"
 
 
-_SIGNED_PCT_RE = re.compile(r"([+-])\s*(\d[\d,]*(?:\.\d+)?)\s*%")
-
-
-def _pct_table_narration(heading: str, rows: list[list[Any]]) -> str | None:
-    """兩欄且第二欄全是帶號百分比（或缺值）的表格，用壓縮讀法；否則回 None。
+def _signed_table_narration(heading: str, rows: list[list[Any]], kind: str) -> str | None:
+    """兩欄且第二欄全是同單位帶號數值（或缺值）的表格，用壓縮讀法；否則回 None。
 
     同方向：「美股主要指數全數上漲，道瓊零點六一、那斯達克一點六九個百分點。」
     混合：  「美股主要指數。道瓊上漲零點六一、標普下跌零點二個百分點。」
+    法人：  「三大法人全數買超，外資八百六十九點九四、投信五十二點八九億。」（kind=net）
     """
     parsed: list[tuple[str, str | None, str | None]] = []  # (name, sign, num)
+    suffixes: set[str] = set()
     for row in rows:
         if len(row) != 2:
             return None
@@ -64,43 +63,65 @@ def _pct_table_narration(heading: str, rows: list[list[Any]]) -> str | None:
         if val is None or str(val).strip() == "":
             parsed.append((str(name or "—"), None, None))
             continue
-        m = _SIGNED_PCT_RE.fullmatch(str(val).strip())
-        if not m:
+        p = fmt.parse_signed(val)
+        if p is None or p[0] == "":
             return None
-        parsed.append((str(name or "—"), m.group(1), m.group(2)))
+        parsed.append((str(name or "—"), p[0], p[1]))
+        suffixes.add(p[2])
     signs = {p[1] for p in parsed if p[1]}
-    if not signs:
+    if not signs or len(suffixes) != 1:
         return None
-    word = {"+": "上漲", "-": "下跌"}
+    suffix = suffixes.pop()
+    tail = "個百分點" if suffix == "%" else suffix
+    up, down, _, _ = fmt.KIND_WORDS.get(kind, fmt.KIND_WORDS["change"])
+    word = {"+": up, "-": down}
     if len(signs) == 1:
         sign = signs.pop()
         items = [f"{n}{fmt.decimal_to_zh(num)}" if num else f"{n}無資料" for n, _, num in parsed]
         head = f"{heading}全數{word[sign]}，" if heading else f"全數{word[sign]}，"
-        return head + "、".join(items) + "個百分點。"
+        return head + "、".join(items) + tail + "。"
     items = [f"{n}{word[sg]}{fmt.decimal_to_zh(num)}" if (num and sg) else f"{n}無資料" for n, sg, num in parsed]
-    return (f"{heading}。" if heading else "") + "、".join(items) + "個百分點。"
+    return (f"{heading}。" if heading else "") + "、".join(items) + tail + "。"
+
+
+def _cell_to_zh(value: Any, col: str) -> str:
+    """儲存格讀法：帶號數值依欄名語意（年增／買超／上漲）；純數值帶上欄名括號裡的單位（營收(億) → 三十六點二二億）。"""
+    p = fmt.parse_signed(value)
+    if p and p[0]:
+        return fmt.signed_to_zh(value, fmt.kind_for_column(col)) or fmt.value_to_zh(value)
+    if p and not p[2]:
+        return fmt.value_to_zh(value, _column_unit(col))
+    return fmt.value_to_zh(value)
+
+
+_COL_UNIT_RE = re.compile(r"[（(]\s*([^）)]*?)\s*[）)]\s*$")
+
+
+def _column_unit(col: str) -> str:
+    """欄名括號內的單位：'營收(億)' → '億'；'漲跌%' → ''（% 走帶號路徑）；沒有 → ''。"""
+    m = _COL_UNIT_RE.search(col)
+    unit = m.group(1) if m else ""
+    return "" if unit in ("%", "％") else unit
 
 
 def _table_narration(s: dict[str, Any]) -> str:
     cols = s.get("columns") or []
     rows = s.get("rows") or []
     if len(cols) == 2:
-        compact = _pct_table_narration(s.get("heading") or "", rows)
+        compact = _signed_table_narration(s.get("heading") or "", rows, fmt.kind_for_column(cols[1]))
         if compact:
             return compact
     lines = []
     for row in rows:
-        cells = [fmt.value_to_zh(v) for v in row]
-        if len(cols) == len(cells) and len(cells) > 1:
+        if len(cols) == len(row) and len(row) > 1:
+            first = fmt.ticker_to_zh(fmt.value_to_zh(row[0]))
             names = [_column_name(c) for c in cols]
-            # 讀法已含方向（上漲／下跌／持平）就不再唸欄名，避免「漲跌上漲零點六個百分點」
-            parts = [
-                cells[i] if cells[i].startswith(_DIRECTION_WORDS) else f"{names[i]}{cells[i]}"
-                for i in range(1, len(cells))
-            ]
-            lines.append(f"{cells[0]}，{'，'.join(parts)}")
+            cells = [_cell_to_zh(row[i], cols[i]) for i in range(1, len(row))]
+            # 讀法已含方向（上漲／年增／買超…）就不再唸欄名，避免「漲跌上漲零點六個百分點」
+            parts = [c if c.startswith(fmt.DIRECTION_WORDS) else f"{names[i + 1]}{c}" for i, c in enumerate(cells)]
+            lines.append(f"{first}，{'，'.join(parts)}")
         else:
-            lines.append("，".join(cells))
+            lines.append("，".join(fmt.value_to_zh(v) for v in row))
     head = s.get("heading") or ""
     return (head + "。" if head else "") + "；".join(lines) + "。"
 
@@ -138,6 +159,7 @@ def build_scenes(content: dict[str, Any]) -> list[dict[str, Any]]:
                 "value": s.get("value"),
                 "delta": s.get("delta"),
                 "deltaPct": s.get("delta_pct"),
+                "deltaKind": s.get("delta_kind") or "change",
                 "deltaDirection": s.get("delta_direction"),
                 "unit": s.get("unit", ""),
             }

@@ -12,7 +12,7 @@ export const sampleProps: ShortProps = {
   captions: null,
   scenes: [
     {type: 'title', startFrame: 0, endFrame: 90, props: {title: '本週三件事', subtitle: 'AI 影片工具速覽', date: '2026-09-20'}},
-    {type: 'stat', startFrame: 90, endFrame: 180, props: {label: 'Kinocut MCP tools', value: '190+', delta: '+12', deltaPct: '+6.7%', deltaDirection: 'up', unit: ''}},
+    {type: 'stat', startFrame: 90, endFrame: 180, props: {label: 'Kinocut MCP tools', value: '190+', delta: '+12', deltaPct: '+6.7%', deltaKind: 'change', deltaDirection: 'up', unit: ''}},
     {type: 'bullets', startFrame: 180, endFrame: 300, props: {heading: '為什麼重要', items: ['不用猜 ffmpeg 參數', '內建品質檢查', '本機免費']}},
     {
       type: 'table',

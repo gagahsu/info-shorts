@@ -4,11 +4,15 @@ from __future__ import annotations
 
 from infoshorts.adapters.base import Adapter
 from infoshorts.adapters.briefing import BriefingAdapter
+from infoshorts.adapters.closing import ClosingAdapter
+from infoshorts.adapters.company import CompanyAdapter
 from infoshorts.adapters.generic import GenericAdapter
 
 _REGISTRY: dict[str, type] = {
     GenericAdapter.name: GenericAdapter,
     BriefingAdapter.name: BriefingAdapter,
+    CompanyAdapter.name: CompanyAdapter,
+    ClosingAdapter.name: ClosingAdapter,
 }
 
 

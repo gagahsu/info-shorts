@@ -67,3 +67,9 @@
 - 對應取捨：`news[].detail` 不用（太長，短影音只唸標題）；`groups_note` 只取族群名稱（冒號前）；`caption` 不用；`premium` 拆成 stat（溢價率／折價率 + 數值），解析失敗給 null。
 - 旁白規則（core，非 adapter）：只有漲跌% 的表格不重複唸欄名；unit 為 % 的數值讀「百分之 X」；漲跌幅讀「漲幅／跌幅 X 個百分點」。
 - 風險：payload 是 Gemini 產的，欄位可能漂移；adapter 對每個欄位都容錯（缺 → null 或不產 scene），fixture 測試釘住目前版本。
+
+## ADR-016 2026-09-19 追加 closing adapter（盤後速報）；stat 增加 delta_kind
+- 來源：ig-auto-post 的 `CLOSING_PAYLOAD`（使用者提供樣本）。結構與 briefing 相近，但語意不同（法人買賣超、漲跌家數），所以獨立一個 adapter，不塞進 briefing。
+- schema：stat 多 `delta_kind`（change／yoy／mom／net），旁白依此讀「上漲／年增／月增／買超」；表格則從欄名推語意（`format.kind_for_column`）。
+- 讀法規則（core）：括號內 4–6 位數字視為股票代號逐位讀（二四四九）；欄名括號內的單位補到純數值後面（營收(億) → 三十六點二二億）；同單位帶號兩欄表用壓縮讀法。
+- company adapter：skill 的圖卡 JSON 已有 `revenue_chart` 結構化數字，直接用，不需要 skill 另外輸出 `company_data.json`（原 TASKS 那一項取消）。

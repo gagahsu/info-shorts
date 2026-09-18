@@ -38,6 +38,7 @@ def apply_defaults(content: dict[str, Any], *, run_id: str | None = None) -> dic
         if s.get("type") == "stat":
             s.setdefault("delta", None)
             s.setdefault("delta_pct", None)
+            s.setdefault("delta_kind", "change")
             s.setdefault("unit", "")
             s.setdefault("delta_direction", _direction(s.get("delta")) or _direction(s.get("delta_pct")))
         if s.get("type") == "quote":

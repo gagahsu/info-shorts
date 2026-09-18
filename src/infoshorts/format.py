@@ -100,20 +100,59 @@ def percent_to_zh(text: str) -> str:
     return {"+": "上漲", "-": "下跌"}.get(sign, "") + body
 
 
-def delta_to_zh(delta: Any, unit: str = "") -> str | None:
-    """漲跌值讀法：'+120' 點 → 上漲一百二十點；'-0.8%' → 下跌零點八個百分點；None → None。"""
-    if delta is None or str(delta).strip() == "":
+# 漲跌的語意（content.json stat.delta_kind / 表格欄名推得）：(正, 負, 正幅度, 負幅度)
+KIND_WORDS = {
+    "change": ("上漲", "下跌", "漲幅", "跌幅"),
+    "yoy": ("年增", "年減", "年增", "年減"),
+    "mom": ("月增", "月減", "月增", "月減"),
+    "net": ("買超", "賣超", "買超", "賣超"),
+}
+DIRECTION_WORDS = tuple({w for ws in KIND_WORDS.values() for w in ws} | {"持平"})
+_SIGNED_ANY_RE = re.compile(r"([+-]?)\s*(\d[\d,]*(?:\.\d+)?)\s*(%|％|[^\d\s+\-.,]*)")
+_TICKER_RE = re.compile(r"([（(])\s*(\d{4,6})\s*([)）])")
+
+
+def kind_for_column(name: str) -> str:
+    """從表格欄名推語意：年增／YoY → yoy；月增／MoM → mom；買賣超／法人 → net；其餘 change。"""
+    n = name.lower()
+    if "年增" in n or "年減" in n or "yoy" in n:
+        return "yoy"
+    if "月增" in n or "月減" in n or "mom" in n:
+        return "mom"
+    if "買超" in n or "賣超" in n or "買賣超" in n or "法人" in n:
+        return "net"
+    return "change"
+
+
+def parse_signed(text: Any) -> tuple[str, str, str] | None:
+    """'+869.94億' → ('+','869.94','億')；'-0.8%' → ('-','0.8','%')；'47,160' → ('','47,160','')；非數值 → None。"""
+    if text is None:
         return None
-    s = str(delta).strip()
-    if s.endswith("%"):
-        return percent_to_zh(s)
-    m = re.fullmatch(r"([+-]?)(\d[\d,]*(?:\.\d+)?)", s)
+    m = _SIGNED_ANY_RE.fullmatch(str(text).strip())
     if not m:
-        return s
-    sign, num = m.group(1), m.group(2)
+        return None
+    return m.group(1), m.group(2), m.group(3).replace("％", "%")
+
+
+def signed_to_zh(text: Any, kind: str = "change", unit: str = "") -> str | None:
+    """帶號數值讀法（含 % 或單位後綴）：'+120'（unit 點）→ 上漲一百二十點；'+869.94億'（net）→ 買超八百六十九點九四億；
+    '-0.8%' → 下跌零點八個百分點；'+31.58%'（yoy）→ 年增三十一點五八個百分點；0 → 持平；None／非數值 → None。"""
+    parsed = parse_signed(text)
+    if parsed is None:
+        return None
+    sign, num, suffix = parsed
     if Decimal(num.replace(",", "")) == 0:
         return "持平"
-    return {"+": "上漲", "-": "下跌"}.get(sign, "") + decimal_to_zh(num) + unit
+    up, down, _, _ = KIND_WORDS.get(kind, KIND_WORDS["change"])
+    tail = "個百分點" if suffix == "%" else (suffix or unit)
+    return {"+": up, "-": down}.get(sign, "") + decimal_to_zh(num) + tail
+
+
+def delta_to_zh(delta: Any, unit: str = "", kind: str = "change") -> str | None:
+    """漲跌值讀法：'+120' 點 → 上漲一百二十點；'-0.8%' → 下跌零點八個百分點；None → None；非數值原樣。"""
+    if delta is None or str(delta).strip() == "":
+        return None
+    return signed_to_zh(delta, kind, unit) or str(delta).strip()
 
 
 def value_to_zh(value: Any, unit: str = "") -> str:
@@ -131,18 +170,23 @@ def value_to_zh(value: Any, unit: str = "") -> str:
     return s + unit
 
 
-def pct_change_to_zh(pct: Any) -> str | None:
-    """漲跌幅讀法：'+1.51%' → 漲幅一點五一個百分點；'-0.8%' → 跌幅零點八個百分點；0 → 持平。"""
+def pct_change_to_zh(pct: Any, kind: str = "change") -> str | None:
+    """漲跌幅讀法：'+1.51%' → 漲幅一點五一個百分點；'-0.8%' → 跌幅零點八個百分點；yoy：年增／年減；0 → 持平。"""
     if pct is None or str(pct).strip() == "":
         return None
-    s = str(pct).strip()
-    m = _PERCENT_RE.fullmatch(s) or re.fullmatch(r"([+-]?)(\d[\d,]*(?:\.\d+)?)", s)
-    if not m:
-        return s
-    sign, num = m.group(1), m.group(2)
+    parsed = parse_signed(pct)
+    if parsed is None:
+        return str(pct).strip()
+    sign, num, _ = parsed
     if Decimal(num.replace(",", "")) == 0:
         return "持平"
-    return {"+": "漲幅", "-": "跌幅"}.get(sign, "幅度") + decimal_to_zh(num) + "個百分點"
+    _, _, up, down = KIND_WORDS.get(kind, KIND_WORDS["change"])
+    return {"+": up, "-": down}.get(sign, "幅度") + decimal_to_zh(num) + "個百分點"
+
+
+def ticker_to_zh(text: str) -> str:
+    """括號內的股票代號逐位讀：京元電子（2449）→ 京元電子（二四四九）。"""
+    return _TICKER_RE.sub(lambda m: m.group(1) + "".join(DIGITS[int(ch)] for ch in m.group(2)) + m.group(3), text)
 
 
 def date_to_zh(iso: str | None) -> str | None:
@@ -158,6 +202,7 @@ def date_to_zh(iso: str | None) -> str | None:
 
 def readable_text(text: str) -> str:
     """自由文字中的百分比與帶正負號數字轉中文讀法；純數字交給 TTS 自行處理。"""
+    text = ticker_to_zh(text)
     text = _PERCENT_RE.sub(lambda m: percent_to_zh(m.group(0)), text)
     text = _SIGNED_RE.sub(lambda m: delta_to_zh(m.group(0)) or m.group(0), text)
     return text

@@ -1,0 +1,54 @@
+{
+  "video": "C:\\Users\\icema\\workspace\\info-shorts\\runs\\2026-09-19-closing\\out\\2026-09-19-closing.mp4",
+  "ok": true,
+  "checks": [
+    {
+      "name": "duration",
+      "passed": true,
+      "message": "67.03s（預期 66.97s ± 0.5）",
+      "details": {
+        "actual": 67.029333,
+        "expected": 66.96666666666667
+      }
+    },
+    {
+      "name": "resolution",
+      "passed": true,
+      "message": "1080×1920（預期 1080×1920）",
+      "details": {}
+    },
+    {
+      "name": "audio_length",
+      "passed": true,
+      "message": "音軌 67.03s vs 影片 67.03s",
+      "details": {
+        "audio": 67.029333,
+        "video": 67.029333
+      }
+    },
+    {
+      "name": "loudness",
+      "passed": true,
+      "message": "Audio loudness is good (-16.4 LUFS)",
+      "details": {
+        "lufs": -16.42,
+        "true_peak": -4.37,
+        "loudness_range": 2.7,
+        "target_lufs": -16
+      }
+    },
+    {
+      "name": "black_frames",
+      "passed": true,
+      "message": "無連續黑幀 > 0.5s",
+      "details": {
+        "runs": []
+      }
+    }
+  ],
+  "advisory": [
+    "kinocut brightness: Video is quite dark (brightness: 21.7). Consider slight brightness increase.",
+    "kinocut contrast: Video has low contrast (std dev: 1.8). Image may appear flat. Consider increasing contrast.",
+    "kinocut saturation: Video appears desaturated (estimated: 1.2%). Consider increasing saturation."
+  ]
+}

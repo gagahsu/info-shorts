@@ -51,7 +51,7 @@ export const getTheme = (name: string): Theme => {
  */
 export const deltaColor = (theme: Theme, kind: ContentKind, dir: DeltaDirection): string => {
   if (dir === 'flat' || dir === null) return theme.muted;
-  const twStyle = kind === 'briefing' || kind === 'company';
+  const twStyle = kind === 'briefing' || kind === 'company' || kind === 'closing';
   if (dir === 'up') return twStyle ? theme.down : theme.up;
   return twStyle ? theme.up : theme.down;
 };

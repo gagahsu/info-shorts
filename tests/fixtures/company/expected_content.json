@@ -1,0 +1,88 @@
+{
+  "id": "2026-09-19-company",
+  "kind": "company",
+  "title": "京元電子（2449）",
+  "subtitle": "全球專業測試龍頭・AI晶片測試品質守門員",
+  "date": "2026-09-19",
+  "disclaimer": true,
+  "target_duration": 60,
+  "sections": [
+    {
+      "type": "quote",
+      "text": "產業：半導體業、專業晶圓與成品測試",
+      "source": null,
+      "narration": null
+    },
+    {
+      "type": "bullets",
+      "heading": "主要產品／服務",
+      "items": [
+        "晶圓測試",
+        "成品測試",
+        "高功率預燒測試"
+      ],
+      "narration": null
+    },
+    {
+      "type": "stat",
+      "label": "2026年8月營收",
+      "value": 40.8,
+      "delta": null,
+      "delta_pct": "+31.58%",
+      "delta_kind": "yoy",
+      "unit": "億元",
+      "narration": null,
+      "delta_direction": "up"
+    },
+    {
+      "type": "table",
+      "heading": "近期月營收",
+      "columns": [
+        "月份",
+        "營收(億)",
+        "年增率"
+      ],
+      "rows": [
+        [
+          "2026年6月",
+          36.22,
+          "+28.64%"
+        ],
+        [
+          "7月",
+          39.91,
+          "+36.75%"
+        ],
+        [
+          "8月",
+          40.8,
+          "+31.58%"
+        ]
+      ],
+      "narration": null
+    },
+    {
+      "type": "bullets",
+      "heading": "主要競爭對手",
+      "items": [
+        "欣銓 (3264)",
+        "矽格 (6257)",
+        "日月光投控 (3711)",
+        "Amkor (艾克爾)"
+      ],
+      "narration": null
+    },
+    {
+      "type": "bullets",
+      "heading": "未來展望",
+      "items": [
+        "AI 測試佔比持續衝高",
+        "擴大資本支出與擴產佈局"
+      ],
+      "narration": null
+    }
+  ],
+  "lang": "zh-TW",
+  "aspect": "9:16",
+  "bgm": null
+}

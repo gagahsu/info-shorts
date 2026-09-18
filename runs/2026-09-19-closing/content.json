@@ -1,0 +1,107 @@
+{
+  "id": "2026-09-19-closing",
+  "kind": "closing",
+  "title": "台股盤後速報",
+  "subtitle": null,
+  "date": "2026-09-18",
+  "disclaimer": true,
+  "target_duration": 60,
+  "sections": [
+    {
+      "type": "stat",
+      "label": "加權指數",
+      "value": "47180.75",
+      "delta": "+892.75",
+      "delta_pct": "+1.93%",
+      "unit": "點",
+      "narration": null,
+      "delta_kind": "change",
+      "delta_direction": "up"
+    },
+    {
+      "type": "stat",
+      "label": "櫃買指數",
+      "value": "412.68",
+      "delta": "+14.51",
+      "delta_pct": "+3.64%",
+      "unit": "點",
+      "narration": null,
+      "delta_kind": "change",
+      "delta_direction": "up"
+    },
+    {
+      "type": "table",
+      "heading": "三大法人買賣超",
+      "columns": [
+        "法人",
+        "買賣超"
+      ],
+      "rows": [
+        [
+          "外資",
+          "+869.94億"
+        ],
+        [
+          "投信",
+          "+52.89億"
+        ],
+        [
+          "自營商",
+          "+243.03億"
+        ],
+        [
+          "合計",
+          "+1165.87億"
+        ]
+      ],
+      "narration": null
+    },
+    {
+      "type": "table",
+      "heading": "漲跌家數",
+      "columns": [],
+      "rows": [
+        [
+          "上漲家數",
+          "1321"
+        ],
+        [
+          "下跌家數",
+          "474"
+        ],
+        [
+          "漲停",
+          "68"
+        ],
+        [
+          "跌停",
+          "1"
+        ]
+      ],
+      "narration": null
+    },
+    {
+      "type": "bullets",
+      "heading": "領漲族群",
+      "items": [
+        "半導體與高價ASIC",
+        "記憶體族群",
+        "營建資產族群"
+      ],
+      "narration": null
+    },
+    {
+      "type": "bullets",
+      "heading": "弱勢族群",
+      "items": [
+        "金融保險",
+        "傳統傳產族群",
+        "面板與遭調節股"
+      ],
+      "narration": null
+    }
+  ],
+  "lang": "zh-TW",
+  "aspect": "9:16",
+  "bgm": null
+}

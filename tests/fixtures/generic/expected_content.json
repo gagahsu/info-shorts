@@ -9,9 +9,10 @@
       "value": "190+",
       "narration": null,
       "delta": null,
+      "delta_pct": null,
+      "delta_kind": "change",
       "unit": "",
-      "delta_direction": null,
-      "delta_pct": null
+      "delta_direction": null
     },
     {
       "type": "bullets",

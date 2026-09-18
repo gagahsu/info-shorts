@@ -1,7 +1,7 @@
 /** props.json 的型別（由 src/infoshorts/props.py 產生）。時間單位：frame。 */
 
 export type DeltaDirection = 'up' | 'down' | 'flat' | null;
-export type ContentKind = 'generic' | 'briefing' | 'company';
+export type ContentKind = 'generic' | 'briefing' | 'company' | 'closing';
 
 export type TitleProps = {title: string; subtitle: string | null; date: string | null};
 export type StatProps = {
@@ -9,6 +9,8 @@ export type StatProps = {
   value: string | number | null;
   delta: string | number | null;
   deltaPct: string | number | null;
+  /** 漲跌語意：change 上漲/下跌、yoy 年增、mom 月增、net 買賣超 */
+  deltaKind: 'change' | 'yoy' | 'mom' | 'net';
   deltaDirection: DeltaDirection;
   unit: string;
 };

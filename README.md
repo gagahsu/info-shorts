@@ -1,6 +1,6 @@
 # info-shorts
 
-結構化資訊 → 直式短影音（資訊卡畫面 + 逐字字幕 + 中文人聲）。通用 core + 來源 adapter（generic / 台股盤前速報 / 公司介紹卡）。全免費工具鏈：edge-tts、Remotion、Kinocut。
+結構化資訊 → 直式短影音（資訊卡畫面 + 逐字字幕 + 中文人聲）。通用 core + 來源 adapter（generic / 台股盤前速報 briefing / 公司介紹卡 company / 盤後速報 closing）。全免費工具鏈：edge-tts、Remotion、Kinocut。
 
 ## 快速開始（Windows 原生，見 `docs/SETUP.md`）
 
@@ -15,6 +15,7 @@ uv run infoshorts build --adapter generic --input examples/generic.json
 
 常用選項：`--dry-run`（只到 scenes.json，看旁白稿）、`--run <名稱>`、`--voice zh-TW-YunJheNeural`、`--rate +5%`、`--bgm x.mp3`（自動 ducking）、`--engine kokoro`（離線備援，先 `uv sync --group kokoro`）。
 更多範例：`examples/text-only.json`、`examples/long-bullets.json`、`examples/multi-stat.json`（含 table 與免責聲明）。
+真實來源：`--adapter briefing|company|closing --input <payload.json>`（樣本在 `tests/fixtures/<adapter>/input.json`）。
 只跑品檢：`uv run infoshorts qa runs/<run>/out/<run>.mp4`。預覽畫面：`cd remotion && npx remotion studio`。
 
 ## 流程

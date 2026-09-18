@@ -1,0 +1,55 @@
+{
+  "video": "C:\\Users\\icema\\workspace\\info-shorts\\runs\\2026-09-19-company\\out\\2026-09-19-company.mp4",
+  "ok": true,
+  "checks": [
+    {
+      "name": "duration",
+      "passed": true,
+      "message": "75.69s（預期 75.63s ± 0.5）",
+      "details": {
+        "actual": 75.690667,
+        "expected": 75.63333333333334
+      }
+    },
+    {
+      "name": "resolution",
+      "passed": true,
+      "message": "1080×1920（預期 1080×1920）",
+      "details": {}
+    },
+    {
+      "name": "audio_length",
+      "passed": true,
+      "message": "音軌 75.69s vs 影片 75.69s",
+      "details": {
+        "audio": 75.690667,
+        "video": 75.690667
+      }
+    },
+    {
+      "name": "loudness",
+      "passed": true,
+      "message": "Audio loudness is good (-16.2 LUFS)",
+      "details": {
+        "lufs": -16.22,
+        "true_peak": -4.26,
+        "loudness_range": 2.9,
+        "target_lufs": -16
+      }
+    },
+    {
+      "name": "black_frames",
+      "passed": true,
+      "message": "無連續黑幀 > 0.5s",
+      "details": {
+        "runs": []
+      }
+    }
+  ],
+  "advisory": [
+    "kinocut brightness: Video is quite dark (brightness: 21.8). Consider slight brightness increase.",
+    "kinocut contrast: Video has low contrast (std dev: 1.4). Image may appear flat. Consider increasing contrast.",
+    "kinocut saturation: Video appears desaturated (estimated: 1.2%). Consider increasing saturation.",
+    "kinocut temporal_motion: Low temporal motion detected (90% of frames are near-static). Verify this isn't an unintended slideshow — image-to-video output should actually move."
+  ]
+}

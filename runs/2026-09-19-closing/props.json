@@ -1,0 +1,180 @@
+{
+  "fps": 30,
+  "width": 1080,
+  "height": 1920,
+  "durationInFrames": 2009,
+  "theme": "neutral",
+  "kind": "closing",
+  "audio": {
+    "voice": "voice.mp3",
+    "bgm": null,
+    "bgmVolume": 0.25,
+    "duckVolume": 0.08,
+    "voiceRanges": [
+      [
+        0,
+        78
+      ],
+      [
+        116,
+        352
+      ],
+      [
+        391,
+        596
+      ],
+      [
+        635,
+        962
+      ],
+      [
+        1001,
+        1281
+      ],
+      [
+        1319,
+        1557
+      ],
+      [
+        1598,
+        1836
+      ],
+      [
+        1874,
+        1970
+      ]
+    ]
+  },
+  "captions": "voice.srt",
+  "scenes": [
+    {
+      "type": "title",
+      "startFrame": 0,
+      "endFrame": 116,
+      "props": {
+        "title": "台股盤後速報",
+        "subtitle": null,
+        "date": "2026-09-18"
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 116,
+      "endFrame": 391,
+      "props": {
+        "label": "加權指數",
+        "value": "47180.75",
+        "delta": "+892.75",
+        "deltaPct": "+1.93%",
+        "deltaKind": "change",
+        "deltaDirection": "up",
+        "unit": "點"
+      }
+    },
+    {
+      "type": "stat",
+      "startFrame": 391,
+      "endFrame": 635,
+      "props": {
+        "label": "櫃買指數",
+        "value": "412.68",
+        "delta": "+14.51",
+        "deltaPct": "+3.64%",
+        "deltaKind": "change",
+        "deltaDirection": "up",
+        "unit": "點"
+      }
+    },
+    {
+      "type": "table",
+      "startFrame": 635,
+      "endFrame": 1001,
+      "props": {
+        "heading": "三大法人買賣超",
+        "columns": [
+          "法人",
+          "買賣超"
+        ],
+        "rows": [
+          [
+            "外資",
+            "+869.94億"
+          ],
+          [
+            "投信",
+            "+52.89億"
+          ],
+          [
+            "自營商",
+            "+243.03億"
+          ],
+          [
+            "合計",
+            "+1165.87億"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "startFrame": 1001,
+      "endFrame": 1319,
+      "props": {
+        "heading": "漲跌家數",
+        "columns": [],
+        "rows": [
+          [
+            "上漲家數",
+            "1321"
+          ],
+          [
+            "下跌家數",
+            "474"
+          ],
+          [
+            "漲停",
+            "68"
+          ],
+          [
+            "跌停",
+            "1"
+          ]
+        ]
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 1319,
+      "endFrame": 1598,
+      "props": {
+        "heading": "領漲族群",
+        "items": [
+          "半導體與高價ASIC",
+          "記憶體族群",
+          "營建資產族群"
+        ]
+      }
+    },
+    {
+      "type": "bullets",
+      "startFrame": 1598,
+      "endFrame": 1874,
+      "props": {
+        "heading": "弱勢族群",
+        "items": [
+          "金融保險",
+          "傳統傳產族群",
+          "面板與遭調節股"
+        ]
+      }
+    },
+    {
+      "type": "disclaimer",
+      "startFrame": 1874,
+      "endFrame": 2009,
+      "props": {
+        "text": "以上內容僅供參考，不構成任何投資建議。投資有風險，請自行審慎評估。"
+      }
+    }
+  ]
+}
